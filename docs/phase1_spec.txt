@@ -1,0 +1,754 @@
+You are an ML research engineer helping me build a reproducible mechanistic-interpretability research project.
+
+PROJECT TITLE
+"Seed Variance in Grokking Circuits: Do Different Random Seeds Learn the Same Fourier Algorithm for Modular Arithmetic?"
+
+IMPORTANT HARDWARE CONSTRAINTS
+I am running this locally on an Apple Silicon M1 MacBook Air.
+
+Hardware:
+- Apple M1
+- CPU + Apple MPS available
+- No NVIDIA GPU
+- No CUDA
+- Limited RAM
+- Python 3.10+ preferred
+
+The code MUST automatically choose:
+
+1. MPS if torch.backends.mps.is_available()
+2. CPU otherwise
+
+Do NOT require CUDA.
+
+The first objective is NOT the full research paper.
+
+PHASE 1 OBJECTIVE:
+Build a clean experimental pipeline that can reliably reproduce grokking on modular arithmetic using ONE random seed.
+
+Once this works, I will extend it to many seeds and mechanistic/Fourier analysis.
+
+============================================================
+1. RESEARCH QUESTION
+============================================================
+
+Eventually I want to answer:
+
+"Do independently trained tiny Transformers converge to the same internal Fourier-based algorithm when they grok modular arithmetic?"
+
+But Phase 1 should only establish a reliable grokking baseline.
+
+Task:
+
+(a + b) mod p = c
+
+Start with:
+
+p = 113
+
+Inputs are integers:
+
+a, b ∈ {0, ..., p-1}
+
+Target:
+
+c = (a + b) mod p
+
+Generate ALL p² possible (a,b) combinations.
+
+Randomly split them into training and test sets.
+
+Start with approximately:
+
+train_fraction = 0.30
+
+Make this configurable.
+
+The split MUST be deterministic for a given seed.
+
+============================================================
+2. MODEL
+============================================================
+
+Implement a very small decoder-style Transformer suitable for grokking experiments.
+
+Do NOT use a pretrained Transformer.
+
+Build it directly with PyTorch.
+
+Suggested initial architecture:
+
+vocab_size = p + special tokens if required
+d_model = 128
+n_heads = 4
+n_layers = 2
+d_mlp = 512
+dropout = 0.0
+
+These must all be configurable.
+
+Input representation can be something similar to:
+
+[a, +, b, =]
+
+and predict:
+
+c
+
+OR another clean formulation appropriate for modular arithmetic grokking.
+
+Keep the sequence representation simple because later I need mechanistic interpretability.
+
+IMPORTANT:
+Expose internal attention modules clearly.
+
+I will later need to:
+- inspect attention matrices
+- inspect Q/K/V
+- extract residual stream activations
+- ablate attention heads
+- perform activation patching
+- perform Fourier analysis
+
+Therefore DO NOT hide everything behind a black-box nn.TransformerEncoder if that makes individual attention heads difficult to inspect.
+
+Prefer implementing explicit:
+
+Embedding
+→ TransformerBlock
+   → MultiHeadSelfAttention
+   → MLP
+→ LayerNorm
+→ Output projection
+
+Each attention head should be accessible later.
+
+============================================================
+3. TRAINING FOR GROKKING
+============================================================
+
+Grokking often requires long training.
+
+Use full-batch training by default because the dataset is tiny.
+
+Support mini-batches optionally.
+
+Optimizer:
+
+AdamW
+
+Make configurable:
+
+learning_rate
+weight_decay
+betas
+
+Suggested starting values:
+
+lr = 1e-3
+weight_decay = 1.0
+
+But DO NOT hard-code assumptions.
+
+Use CrossEntropyLoss.
+
+Track:
+
+train loss
+test loss
+train accuracy
+test accuracy
+epoch/step
+elapsed time
+learning rate
+
+The training loop should be capable of running for many optimization steps.
+
+Start with something like:
+
+max_steps = 100000
+
+but make it configurable.
+
+DO NOT print every step.
+
+Use configurable:
+
+log_every = 100
+eval_every = 100
+checkpoint_every = 1000
+
+============================================================
+4. EARLY STOPPING / GROKKING DETECTION
+============================================================
+
+Do NOT use conventional early stopping based on validation loss.
+
+That could stop training before grokking occurs.
+
+Instead define configurable grokking criteria.
+
+For example:
+
+train_accuracy >= 0.99
+test_accuracy >= 0.95
+
+If test accuracy crosses the threshold after training accuracy has already become high, record:
+
+grokking_step
+grokking_time
+
+Allow training to continue for some configurable number of steps afterward.
+
+Example:
+
+post_grok_steps = 2000
+
+Save the checkpoint where grokking is first detected.
+
+============================================================
+5. REPRODUCIBILITY
+============================================================
+
+Create a function:
+
+set_seed(seed)
+
+Set:
+
+random.seed
+numpy.random.seed
+torch.manual_seed
+
+and any relevant MPS/PyTorch deterministic settings that are practical.
+
+Store the seed with every experiment.
+
+Default:
+
+seed = 42
+
+Later I will run many seeds, so design the project accordingly.
+
+============================================================
+6. PROJECT STRUCTURE
+============================================================
+
+Create:
+
+seed-grokking/
+│
+├── configs/
+│   └── base.yaml
+│
+├── data/
+│   ├── __init__.py
+│   └── modular_arithmetic.py
+│
+├── models/
+│   ├── __init__.py
+│   └── tiny_transformer.py
+│
+├── training/
+│   ├── __init__.py
+│   ├── trainer.py
+│   └── metrics.py
+│
+├── analysis/
+│   ├── __init__.py
+│   └── grokking.py
+│
+├── experiments/
+│   ├── __init__.py
+│   └── baseline.py
+│
+├── plots/
+│
+├── checkpoints/
+│
+├── results/
+│
+├── main.py
+├── requirements.txt
+└── README.md
+
+For now DO NOT implement the advanced mechanistic-analysis files.
+
+Those will come after we successfully reproduce grokking.
+
+============================================================
+7. CONFIGURATION
+============================================================
+
+Use YAML configuration.
+
+base.yaml should contain sections similar to:
+
+experiment:
+    name: modular_addition_baseline
+    seed: 42
+
+data:
+    prime: 113
+    operation: addition
+    train_fraction: 0.30
+
+model:
+    d_model: 128
+    n_heads: 4
+    n_layers: 2
+    d_mlp: 512
+    dropout: 0.0
+
+training:
+    max_steps: 100000
+    batch_size: full
+    learning_rate: 0.001
+    weight_decay: 1.0
+    beta1: 0.9
+    beta2: 0.98
+
+    log_every: 100
+    eval_every: 100
+    checkpoint_every: 1000
+
+grokking:
+    train_accuracy_threshold: 0.99
+    test_accuracy_threshold: 0.95
+    post_grok_steps: 2000
+
+Make the parser robust.
+
+============================================================
+8. RESULTS
+============================================================
+
+For every experiment create something like:
+
+results/seed_42/
+
+containing:
+
+config.yaml
+metrics.csv
+summary.json
+training_curves.png
+
+metrics.csv should contain:
+
+step
+train_loss
+test_loss
+train_accuracy
+test_accuracy
+elapsed_seconds
+
+summary.json should contain at least:
+
+seed
+device
+prime
+train_fraction
+number_train_samples
+number_test_samples
+parameter_count
+final_train_accuracy
+final_test_accuracy
+best_test_accuracy
+grokking_detected
+grokking_step
+grokking_time_seconds
+total_training_time_seconds
+
+============================================================
+9. CHECKPOINTS
+============================================================
+
+Store checkpoints under:
+
+checkpoints/seed_42/
+
+Save:
+
+latest.pt
+best.pt
+grokking.pt
+
+and optionally periodic checkpoints.
+
+Checkpoint should contain:
+
+model_state_dict
+optimizer_state_dict
+step
+config
+metrics
+seed
+
+Make checkpoint loading/resuming possible.
+
+I should be able to interrupt training and continue later.
+
+============================================================
+10. PLOTTING
+============================================================
+
+Automatically generate a publication-quality training plot.
+
+X-axis:
+
+optimization step
+
+Y-axis:
+
+accuracy
+
+Plot:
+
+training accuracy
+test accuracy
+
+Preferably also produce a second figure for:
+
+training loss
+test loss
+
+Use matplotlib.
+
+Do NOT use seaborn.
+
+Save figures at high DPI.
+
+Mark the grokking step with a vertical dashed line if detected.
+
+DO NOT manually specify colors.
+
+============================================================
+11. DEVICE SUPPORT
+============================================================
+
+Create a clean device utility.
+
+Something like:
+
+if torch.backends.mps.is_available():
+    device = torch.device("mps")
+else:
+    device = torch.device("cpu")
+
+Print at startup:
+
+Device: MPS
+
+or:
+
+Device: CPU
+
+Do NOT attempt CUDA initialization.
+
+Be careful about PyTorch operations that may not work correctly on MPS.
+
+If an operation has known MPS compatibility issues, use a safe implementation.
+
+============================================================
+12. PERFORMANCE
+============================================================
+
+This is running on an M1 MacBook.
+
+Optimize accordingly.
+
+Avoid:
+
+- huge tensors
+- unnecessary activation storage
+- unnecessary model copies
+- excessive logging
+- expensive evaluation every step
+
+Because p=113:
+
+113² = 12,769 examples
+
+so the dataset is small.
+
+Keep everything memory-efficient.
+
+============================================================
+13. COMMAND LINE INTERFACE
+============================================================
+
+I should be able to run:
+
+python main.py --config configs/base.yaml
+
+and optionally:
+
+python main.py --config configs/base.yaml --seed 123
+
+Also support:
+
+python main.py --config configs/base.yaml --resume checkpoints/seed_42/latest.pt
+
+CLI seed should override YAML seed.
+
+============================================================
+14. SANITY CHECKS
+============================================================
+
+Before long training begins, automatically verify:
+
+1. Dataset size = p².
+2. Train/test sets don't overlap.
+3. Targets satisfy (a+b) mod p.
+4. Model forward pass works.
+5. Output logits have correct shape.
+6. Gradients flow.
+7. One optimization step works.
+8. Parameter count is printed.
+
+Fail with useful error messages if anything is wrong.
+
+============================================================
+15. RESEARCH LOGGING
+============================================================
+
+At startup print something like:
+
+============================================================
+GROKKING EXPERIMENT
+============================================================
+Operation: Modular Addition
+Prime: 113
+Seed: 42
+Train Fraction: 0.30
+Train Samples: ...
+Test Samples: ...
+Device: MPS
+Parameters: ...
+============================================================
+
+During training:
+
+Step 1000 | Train Loss ... | Test Loss ... | Train Acc ... | Test Acc ...
+
+When training accuracy exceeds threshold:
+
+MEMORIZATION ACHIEVED
+
+When test accuracy crosses grokking threshold:
+
+GROKKING DETECTED
+Step: ...
+Elapsed time: ...
+
+============================================================
+16. IMPORTANT RESEARCH DESIGN REQUIREMENTS
+============================================================
+
+Do not assume that reaching high training accuracy means grokking.
+
+We specifically want to observe:
+
+Phase A:
+low train accuracy / low test accuracy
+
+Phase B:
+high train accuracy / low test accuracy
+
+Phase C:
+high train accuracy / rapidly improving test accuracy
+
+Phase D:
+high train accuracy / high test accuracy
+
+The pipeline should make this transition visible.
+
+If grokking does NOT occur, that is NOT a software failure.
+
+Record the negative result honestly.
+
+============================================================
+17. FUTURE COMPATIBILITY
+============================================================
+
+Design the model now so that later I can implement:
+
+- Fourier analysis of embeddings
+- Fourier analysis of neuron activations
+- attention pattern inspection
+- Q/K/V analysis
+- residual stream extraction
+- attention-head ablation
+- neuron ablation
+- activation patching
+- representation similarity
+- cross-seed circuit matching
+
+Therefore make Transformer internals easily accessible.
+
+Useful methods could eventually support:
+
+model.get_activations(...)
+model.get_attention_patterns(...)
+
+You do not need to implement the entire mechanistic-interpretability pipeline yet, but do not design the model in a way that makes these analyses difficult.
+
+============================================================
+18. REQUIREMENTS
+============================================================
+
+Keep dependencies minimal.
+
+Prefer:
+
+torch
+numpy
+pandas
+matplotlib
+pyyaml
+tqdm
+
+Do NOT introduce heavyweight frameworks unless necessary.
+
+No:
+
+TensorFlow
+JAX
+Hugging Face Transformers
+TransformerLens
+
+for Phase 1.
+
+We want full control over our tiny Transformer.
+
+============================================================
+19. README
+============================================================
+
+Write a detailed README explaining:
+
+1. Research question
+2. What grokking is
+3. Modular arithmetic task
+4. Dataset construction
+5. Transformer architecture
+6. Training setup
+7. How to install dependencies
+8. How to run the baseline
+9. How to resume training
+10. Where results are stored
+11. How grokking is detected
+12. Hardware requirements
+13. Current Phase 1 scope
+14. Planned Phase 2 multi-seed experiments
+15. Planned Phase 3 mechanistic/Fourier analysis
+
+Include commands for macOS:
+
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+python main.py --config configs/base.yaml
+
+============================================================
+20. CODE QUALITY
+============================================================
+
+This is intended to become research code.
+
+Therefore:
+
+- Use type hints where useful.
+- Add docstrings.
+- Keep modules clean.
+- Avoid duplicated code.
+- Avoid giant files.
+- Use descriptive names.
+- Validate configuration.
+- Handle errors clearly.
+- Keep experiment output deterministic where practical.
+- Do not fabricate results.
+- Do not create fake metrics.
+- Do not assume grokking occurs.
+- Do not silently change experimental parameters.
+
+============================================================
+21. VERY IMPORTANT: IMPLEMENT, DON'T JUST EXPLAIN
+============================================================
+
+Create the COMPLETE working project.
+
+I do NOT want pseudocode.
+
+Write every required Python file completely.
+
+After creating the project:
+
+1. Inspect all files.
+2. Check imports.
+3. Check paths.
+4. Check configuration parsing.
+5. Run a quick smoke test using a very small number of steps.
+6. Fix any errors.
+7. Do NOT run the full 100,000-step experiment automatically.
+8. Give me the exact command to start the real experiment.
+
+The smoke test must not overwrite or be confused with the real experiment results.
+
+============================================================
+22. AFTER IMPLEMENTATION
+============================================================
+
+Tell me:
+
+- Exact command to create the environment.
+- Exact command to install dependencies.
+- Exact command to run the experiment.
+- Exact command to resume an interrupted experiment.
+- Where metrics are saved.
+- Where checkpoints are saved.
+- Where plots are saved.
+
+Also report the model's approximate parameter count.
+
+Do NOT claim that grokking has occurred unless the actual experiment demonstrates it.
+
+============================================================
+FINAL GOAL
+============================================================
+
+Phase 1 should give me a reliable research baseline:
+
+Modular arithmetic dataset
+        ↓
+Tiny Transformer
+        ↓
+Memorization
+        ↓
+Extended training
+        ↓
+Possible grokking transition
+        ↓
+Saved checkpoints + metrics
+        ↓
+Training/test curves
+
+Once this baseline is verified, I will extend the SAME codebase to:
+
+10–30 random seeds
+        ↓
+Compare grokking behavior
+        ↓
+Fourier representation analysis
+        ↓
+Circuit discovery
+        ↓
+Causal ablations
+        ↓
+Cross-seed circuit similarity
+        ↓
+Research paper
+
+Build Phase 1 now.

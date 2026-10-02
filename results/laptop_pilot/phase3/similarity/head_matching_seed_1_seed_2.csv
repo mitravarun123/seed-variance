@@ -1,0 +1,3 @@
+layer_a,head_a,layer_b,head_b,functional_similarity,accepted_match
+0,0,0,0,0.42857142857142844,True
+0,1,0,1,0.42857142857142844,True

@@ -1,0 +1,13 @@
+seed,stage,checkpoint_path,available
+0,initial,checkpoints/laptop_pilot/phase2/seed_0/initial.pt,True
+0,memorization,checkpoints/laptop_pilot/phase2/seed_0/memorization.pt,True
+0,grokking,checkpoints/laptop_pilot/phase2/seed_0/grokking.pt,False
+0,final,checkpoints/laptop_pilot/phase2/seed_0/final.pt,True
+1,initial,checkpoints/laptop_pilot/phase2/seed_1/initial.pt,True
+1,memorization,checkpoints/laptop_pilot/phase2/seed_1/memorization.pt,True
+1,grokking,checkpoints/laptop_pilot/phase2/seed_1/grokking.pt,False
+1,final,checkpoints/laptop_pilot/phase2/seed_1/final.pt,True
+2,initial,checkpoints/laptop_pilot/phase2/seed_2/initial.pt,True
+2,memorization,checkpoints/laptop_pilot/phase2/seed_2/memorization.pt,True
+2,grokking,checkpoints/laptop_pilot/phase2/seed_2/grokking.pt,False
+2,final,checkpoints/laptop_pilot/phase2/seed_2/final.pt,True

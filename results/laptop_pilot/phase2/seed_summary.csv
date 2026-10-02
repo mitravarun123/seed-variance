@@ -1,0 +1,4 @@
+model_seed,memorization_step,grokking_step,grokking_delay_steps,best_test_accuracy,status,right_censored
+0,190,,,0.29411764705882354,completed,True
+1,300,,,0.07058823529411765,completed,True
+2,270,,,0.1411764705882353,completed,True

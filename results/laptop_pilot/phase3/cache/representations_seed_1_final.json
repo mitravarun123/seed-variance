@@ -1,0 +1,15 @@
+{
+  "analysis_version": 1,
+  "seed": 1,
+  "stage": "final",
+  "dataset_split_hash": "fac9aa2a3cbb68a521bec8beb9af91c95f9a64a47318a59c4bfa847ed002856e",
+  "representation_example_hash": "e64d80664c83fded9acb415768937e0f3882bfb9673fb0b230b70dbfe2ce0a07",
+  "model_hash": "3bbcff2e4cbf5bed85ed92ffa3dc8d0e0234642a97acb1320f9c3147f578a5a6",
+  "keys": [
+    "L0.resid_pre",
+    "L0.resid_mid",
+    "L0.resid_post",
+    "final_residual"
+  ],
+  "config_hash": "1f3c6ea76028cc2bb254f0cb84b96f0d0e4f8013ddd92bd6b3cd17c63b30798a"
+}

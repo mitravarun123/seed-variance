@@ -1,0 +1,141 @@
+experiment:
+  name: modular_addition_baseline
+  seed: 42
+  output_root: results
+  checkpoint_root: checkpoints
+data:
+  prime: 113
+  operation: addition
+  train_fraction: 0.3
+  data_seed: 42
+  control: none
+model:
+  d_model: 128
+  n_heads: 4
+  n_layers: 2
+  d_mlp: 512
+  dropout: 0.0
+training:
+  max_steps: 100000
+  batch_size: full
+  microbatch_size: 256
+  eval_batch_size: 512
+  learning_rate: 0.001
+  weight_decay: 1.0
+  beta1: 0.9
+  beta2: 0.98
+  log_every: 100
+  eval_every: 100
+  checkpoint_every: 1000
+  milestones:
+  - 100
+  - 500
+  - 1000
+  - 2000
+  - 5000
+  - 10000
+  - 20000
+  - 50000
+  cpu_threads: 4
+memorization:
+  train_accuracy_threshold: 0.99
+grokking:
+  train_accuracy_threshold: 0.99
+  test_accuracy_threshold: 0.95
+  required_consecutive_evals: 3
+  post_grok_steps: 2000
+multi_seed:
+  model_seeds:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+analysis:
+  seeds:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  checkpoints:
+  - initial
+  - memorization
+  - grokking
+  - final
+  batch_size: 256
+  representation_examples: 512
+  patching_examples: 128
+  top_k:
+  - 3
+  - 5
+  - 10
+  tier: 3
+phase4:
+  model_seeds:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  experiments:
+    train_fraction:
+    - 0.2
+    - 0.3
+    - 0.4
+    - 0.5
+    prime:
+    - 59
+    - 97
+    - 113
+    - 127
+    width:
+    - 64
+    - 128
+    - 256
+    depth:
+    - 1
+    - 2
+    - 3
+    heads:
+    - 1
+    - 2
+    - 4
+    weight_decay:
+    - 0
+    - 0.1
+    - 0.5
+    - 1.0
+    - 2.0
+    learning_rate:
+    - 0.0003
+    - 0.001
+    - 0.003
+    operation:
+    - addition
+    - subtraction
+    - multiplication
+    data_seed:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 1001
+    control:
+    - random_labels
+  tier2_factors:
+  - train_fraction
+  - operation
+  - weight_decay
+  bootstrap_seed: 2026
+  bootstrap_samples: 2000

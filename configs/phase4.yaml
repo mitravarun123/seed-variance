@@ -1,0 +1,27 @@
+# Phase 4 inherits Phase 1/2 model and training settings from base.yaml.
+# Conditions change one factor at a time; the shared baseline is run once.
+experiment:
+  name: phase4_controlled_robustness
+  output_root: results/phase4
+  checkpoint_root: checkpoints/phase4
+
+phase4:
+  model_seeds: [0, 1, 2, 3, 4]
+  max_runs_without_confirmation: 10
+  analysis_tier: 1
+  tier2_condition_ids: []
+  tier3_condition_ids: []
+  experiments:
+    train_fraction: {enabled: true, values: [0.20, 0.30, 0.40, 0.50]}
+    prime: {enabled: true, values: [59, 97, 113, 127]}
+    width: {enabled: true, values: [64, 128, 256]}
+    depth: {enabled: true, values: [1, 2, 3]}
+    heads: {enabled: true, values: [1, 2, 4]}
+    weight_decay: {enabled: true, values: [0.1, 0.5, 1.0, 2.0]}
+    learning_rate: {enabled: true, values: [0.0003, 0.001, 0.003]}
+    operation: {enabled: true, values: [addition, subtraction, multiplication]}
+    data_seed: {enabled: true, values: [42, 123, 456, 789, 1001]}
+    control: {enabled: false, values: [random_labels]}
+  tier2_factors: [train_fraction, operation, weight_decay]
+  bootstrap_seed: 2026
+  bootstrap_samples: 2000

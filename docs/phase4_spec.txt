@@ -1,0 +1,1580 @@
+Continue my existing research project:
+
+"Seed Variance in Grokking Circuits: Do Different Random Seeds Learn the Same Fourier Algorithm for Modular Arithmetic?"
+
+EXISTING PROJECT:
+
+PHASE 1
+Single-seed grokking baseline.
+
+PHASE 2
+Multi-seed grokking experiments with fixed dataset split and varying model seeds.
+
+PHASE 3
+Mechanistic interpretability:
+- Fourier analysis
+- frequency selection
+- residual representations
+- CKA
+- attention-head analysis
+- causal head ablation
+- MLP ablation
+- activation patching
+- cross-seed circuit matching
+
+PHASE 4
+ROBUSTNESS + ABLATIONS + GENERALIZATION
+
+IMPORTANT:
+
+DO NOT rebuild the project.
+DO NOT overwrite Phase 1–3 results.
+DO NOT change existing experiments retrospectively.
+DO NOT fabricate missing Phase-3 results.
+
+Inspect the existing repository and extend it cleanly.
+
+============================================================
+1. CENTRAL PHASE-4 QUESTION
+============================================================
+
+Phase 3 studies:
+
+"Do different random seeds learn similar internal mechanisms?"
+
+But that conclusion may depend on one specific configuration.
+
+Phase 4 asks:
+
+"How robust is mechanistic convergence across changes in data,
+task, architecture, optimization, and training conditions?"
+
+We want to determine whether the Phase-3 findings are:
+
+A. robust/general phenomena
+
+B. specific to one hyperparameter regime
+
+C. dependent on architecture
+
+D. dependent on modular arithmetic task
+
+E. dependent on training dynamics
+
+============================================================
+2. SCIENTIFIC PRINCIPLE
+============================================================
+
+Do NOT randomly sweep hundreds of hyperparameters.
+
+This is not a generic hyperparameter optimization project.
+
+Use controlled experiments.
+
+Each experiment should modify ONE major factor while keeping the
+remaining baseline configuration fixed.
+
+Baseline:
+
+prime = 113
+operation = addition
+train_fraction = validated Phase-1 value
+architecture = validated baseline
+optimizer = AdamW
+weight_decay = validated baseline
+learning_rate = validated baseline
+
+Use the exact validated Phase-1/2 configuration rather than blindly
+replacing it with example values below.
+
+============================================================
+3. EXPERIMENT GROUP A — TRAIN FRACTION
+============================================================
+
+Test whether mechanistic convergence depends on training-data amount.
+
+Suggested:
+
+train_fraction:
+
+0.20
+0.30
+0.40
+0.50
+
+Baseline remains 0.30 if that is the validated configuration.
+
+Questions:
+
+- Does grokking occur at every fraction?
+- Does grokking time change?
+- Does Fourier structure change?
+- Do dominant frequencies change?
+- Does cross-seed mechanistic similarity change?
+
+Use several seeds per condition.
+
+Start with:
+
+5 seeds per condition
+
+rather than immediately using 10–30.
+
+============================================================
+4. EXPERIMENT GROUP B — PRIME SIZE
+============================================================
+
+Test different modular arithmetic sizes.
+
+Suggested primes:
+
+p = 59
+p = 97
+p = 113
+p = 127
+
+Do not assume all primes will use identical optimal training lengths.
+
+Questions:
+
+- Does Fourier structure persist?
+- Are frequency-selection patterns related to p?
+- Does mechanistic convergence increase/decrease with task size?
+- Does grokking time scale with p?
+
+Keep architecture fixed initially.
+
+============================================================
+5. EXPERIMENT GROUP C — MODEL WIDTH
+============================================================
+
+Test representation capacity.
+
+Suggested:
+
+d_model = 64
+d_model = 128
+d_model = 256
+
+Keep:
+
+n_layers
+training data
+prime
+optimizer
+
+fixed.
+
+Questions:
+
+- Are narrow models forced toward more similar circuits?
+- Do wider models show more mechanistic diversity?
+- Does Fourier energy become more distributed with width?
+- Does head/MLP redundancy increase?
+
+============================================================
+6. EXPERIMENT GROUP D — DEPTH
+============================================================
+
+Test:
+
+n_layers = 1
+n_layers = 2
+n_layers = 3
+
+Be careful with M1 compute.
+
+Do NOT immediately use large/deep models.
+
+Questions:
+
+- Does additional depth change where modular computation occurs?
+- Do deeper models distribute the algorithm across layers?
+- Does cross-seed CKA decrease?
+- Does circuit matching become less one-to-one?
+
+============================================================
+7. EXPERIMENT GROUP E — NUMBER OF HEADS
+============================================================
+
+Where dimension divisibility permits, test:
+
+n_heads = 1
+n_heads = 2
+n_heads = 4
+
+Keep d_model fixed.
+
+Questions:
+
+- Does multi-head redundancy affect circuit convergence?
+- Does one-head architecture force stronger mechanistic convergence?
+- Can equivalent computation split across heads?
+
+============================================================
+8. EXPERIMENT GROUP F — WEIGHT DECAY
+============================================================
+
+Grokking can be sensitive to optimization/regularization.
+
+Test controlled values around the validated baseline.
+
+For example:
+
+weight_decay = 0.1
+weight_decay = 0.5
+weight_decay = 1.0
+weight_decay = 2.0
+
+Do NOT assume all settings will grok.
+
+Questions:
+
+- Does regularization alter grokking time?
+- Does it alter Fourier emergence?
+- Does it affect mechanistic convergence?
+
+Negative results must be retained.
+
+============================================================
+9. EXPERIMENT GROUP G — LEARNING RATE
+============================================================
+
+Use a small controlled set around the baseline.
+
+For example:
+
+lr = 3e-4
+lr = 1e-3
+lr = 3e-3
+
+Do not turn this into a tuning competition.
+
+Questions:
+
+- Does the same mechanism emerge under different optimization paths?
+- Are Fourier frequencies robust to learning rate?
+- Does training speed affect circuit organization?
+
+============================================================
+10. EXPERIMENT GROUP H — DIFFERENT MODULAR OPERATIONS
+============================================================
+
+This is one of the most important generalization tests.
+
+Extend dataset generation to support:
+
+addition:
+
+(a + b) mod p
+
+subtraction:
+
+(a - b) mod p
+
+multiplication:
+
+(a * b) mod p
+
+Potentially division later if mathematically valid and carefully
+defined.
+
+Do NOT assume mechanisms will be identical across operations.
+
+Primary comparison:
+
+addition
+vs
+subtraction
+vs
+multiplication
+
+Questions:
+
+- Does Fourier structure emerge for all operations?
+- Do different operations select different frequencies?
+- Is cross-seed convergence task dependent?
+- Does multiplication produce qualitatively different circuits?
+
+============================================================
+11. EXPERIMENT GROUP I — DATA SPLIT ROBUSTNESS
+============================================================
+
+Phase 2 intentionally fixed:
+
+data_seed
+
+while varying:
+
+model_seed.
+
+Now separately test whether conclusions depend on the train/test split.
+
+Use perhaps:
+
+data_seed:
+42
+123
+456
+789
+1001
+
+For each data split train multiple model seeds.
+
+This creates a hierarchical design:
+
+DATA SPLIT
+    |
+    +-- model seed 0
+    +-- model seed 1
+    +-- model seed 2
+    ...
+
+This lets us separate:
+
+variance due to initialization
+
+from
+
+variance due to training examples.
+
+============================================================
+12. TWO-FACTOR VARIANCE ANALYSIS
+============================================================
+
+For data-seed experiments estimate variation attributable to:
+
+dataset split
+
+versus
+
+model initialization.
+
+Metrics can include:
+
+grokking step
+final accuracy
+Fourier profile
+dominant frequency overlap
+representation similarity
+
+Do not overstate formal variance decomposition if sample sizes are
+small.
+
+Use descriptive statistics first.
+
+============================================================
+13. CORE ROBUSTNESS METRICS
+============================================================
+
+For every experimental condition collect:
+
+BEHAVIORAL
+
+- grokking rate
+- memorization step
+- grokking step
+- grokking delay
+- final accuracy
+- test loss
+
+REPRESENTATIONAL
+
+- Fourier energy profile
+- dominant frequencies
+- CKA
+
+CAUSAL
+
+- important heads
+- important MLPs
+- head ablation effects
+- MLP ablation effects
+
+CIRCUIT
+
+- head matching quality
+- causal profile similarity
+- frequency similarity
+
+============================================================
+14. DO NOT RUN FULL PHASE-3 ANALYSIS EVERYWHERE
+============================================================
+
+Phase 4 could become computationally expensive.
+
+Use a tiered analysis.
+
+TIER 1 — ALL CONDITIONS
+
+Run:
+
+behavioral metrics
+Fourier analysis
+basic CKA
+
+TIER 2 — SELECTED CONDITIONS
+
+Run:
+
+head ablation
+MLP ablation
+functional head signatures
+
+TIER 3 — REPRESENTATIVE CONDITIONS
+
+Run expensive:
+
+activation patching
+detailed circuit discovery
+cross-seed functional matching
+
+Do not perform expensive patching on every checkpoint/configuration
+unless necessary.
+
+============================================================
+15. CONDITION IDENTIFIERS
+============================================================
+
+Every run must have a unique deterministic condition ID.
+
+Example:
+
+operation_addition_p113_train0.30_d128_L2_H4_wd1.0_lr0.001
+
+plus:
+
+data_seed
+model_seed
+
+Store this metadata with every result.
+
+============================================================
+16. OUTPUT STRUCTURE
+============================================================
+
+Create:
+
+results/
+    phase4/
+        train_fraction/
+        prime/
+        width/
+        depth/
+        heads/
+        weight_decay/
+        learning_rate/
+        operation/
+        data_split/
+        aggregate/
+        figures/
+        tables/
+
+Never mix Phase-4 results with Phase-2/3 results.
+
+============================================================
+17. CONFIGURATION
+============================================================
+
+Create:
+
+configs/phase4.yaml
+
+Example:
+
+phase4:
+
+    baseline:
+        prime: 113
+        operation: addition
+        train_fraction: 0.30
+
+    seeds:
+        model_seeds:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+
+    experiments:
+
+        train_fraction:
+            enabled: true
+            values:
+                - 0.20
+                - 0.30
+                - 0.40
+                - 0.50
+
+        prime:
+            enabled: true
+            values:
+                - 59
+                - 97
+                - 113
+                - 127
+
+        width:
+            enabled: true
+            values:
+                - 64
+                - 128
+                - 256
+
+        depth:
+            enabled: true
+            values:
+                - 1
+                - 2
+                - 3
+
+        heads:
+            enabled: true
+            values:
+                - 1
+                - 2
+                - 4
+
+        weight_decay:
+            enabled: true
+            values:
+                - 0.1
+                - 0.5
+                - 1.0
+                - 2.0
+
+        learning_rate:
+            enabled: true
+            values:
+                - 0.0003
+                - 0.001
+                - 0.003
+
+        operation:
+            enabled: true
+            values:
+                - addition
+                - subtraction
+                - multiplication
+
+        data_seed:
+            enabled: true
+            values:
+                - 42
+                - 123
+                - 456
+                - 789
+                - 1001
+
+IMPORTANT:
+
+Use the actual validated baseline configuration from earlier phases.
+
+============================================================
+18. COMPUTE BUDGET SYSTEM
+============================================================
+
+I am running this on an M1 MacBook Air.
+
+Phase 4 could generate too many runs.
+
+Before running experiments calculate:
+
+number of conditions
+×
+number of seeds
+=
+number of training runs
+
+Print this clearly.
+
+Also estimate runtime using measured Phase-2 runtimes.
+
+Example:
+
+20 conditions
+×
+5 seeds
+=
+100 runs
+
+Estimated runtime: ...
+
+DO NOT automatically launch a huge experiment.
+
+Require explicit command/flag such as:
+
+--confirm-large-run
+
+when the requested run count exceeds a configurable threshold.
+
+============================================================
+19. RECOMMENDED EXECUTION ORDER
+============================================================
+
+Do NOT run everything simultaneously.
+
+Implement presets.
+
+PRESET A — CORE
+
+train fraction
+prime
+model width
+
+PRESET B — ARCHITECTURE
+
+depth
+number of heads
+
+PRESET C — OPTIMIZATION
+
+weight decay
+learning rate
+
+PRESET D — TASK GENERALIZATION
+
+operation
+
+PRESET E — DATA ROBUSTNESS
+
+data seed
+
+Support commands like:
+
+python main.py \
+    --config configs/phase4.yaml \
+    --phase4-preset core
+
+============================================================
+20. MOST IMPORTANT FIRST EXPERIMENTS
+============================================================
+
+Given limited M1 compute, prioritize:
+
+1. train fraction
+2. prime size
+3. model width
+4. modular operation
+
+These provide stronger scientific generalization than an enormous
+hyperparameter sweep.
+
+Optimization sweeps are secondary.
+
+============================================================
+21. ROBUSTNESS OF FOURIER CONCLUSIONS
+============================================================
+
+For every condition determine:
+
+Does Fourier structure emerge?
+
+Which frequencies dominate?
+
+How concentrated is Fourier energy?
+
+How similar are frequency profiles across seeds?
+
+Create:
+
+condition_fourier_summary.csv
+
+Columns should include:
+
+condition_id
+factor
+factor_value
+model_seed
+dominant_frequencies
+frequency_concentration
+fourier_similarity_to_baseline
+
+============================================================
+22. FOURIER CONCENTRATION
+============================================================
+
+Implement measures of how concentrated frequency usage is.
+
+Possible metrics:
+
+top-k energy fraction
+
+and normalized entropy of the frequency energy distribution.
+
+If normalized Fourier energies are:
+
+q_k
+
+compute:
+
+H = -sum(q_k log q_k)
+
+Normalize appropriately if desired.
+
+This tells us whether a model uses:
+
+few concentrated frequencies
+
+or
+
+many distributed frequencies.
+
+============================================================
+23. REPRESENTATION ROBUSTNESS
+============================================================
+
+Calculate CKA across seeds within each condition.
+
+Then compare:
+
+within-condition similarity
+
+versus
+
+between-condition similarity.
+
+Example:
+
+CKA(seed0, seed1 | p=113)
+
+versus
+
+CKA(model | p=113, model | p=59)
+
+This helps distinguish:
+
+seed variation
+
+from
+
+task/configuration variation.
+
+============================================================
+24. CAUSAL ROBUSTNESS
+============================================================
+
+For selected conditions repeat causal ablations.
+
+Ask:
+
+Are the same TYPES of components important?
+
+Not:
+
+"Is L0H1 always important?"
+
+Head indices are not identities.
+
+Use Phase-3 functional matching.
+
+============================================================
+25. ARCHITECTURE COMPARISON CAUTION
+============================================================
+
+Models with different:
+
+width
+depth
+head count
+
+cannot be compared by naive parameter identity.
+
+Use:
+
+functional signatures
+representation similarity where dimensions permit
+subspace similarity
+Fourier profiles
+causal profiles
+
+Do not force one-to-one component mappings across incompatible
+architectures.
+
+============================================================
+26. OPERATION COMPARISON
+============================================================
+
+For:
+
+addition
+subtraction
+multiplication
+
+produce separate Fourier/circuit summaries.
+
+Do not assume multiplication should resemble addition.
+
+Create:
+
+operation_comparison.csv
+
+and figures showing:
+
+operation
+vs
+frequency structure
+vs
+grokking dynamics
+vs
+cross-seed convergence.
+
+============================================================
+27. NEGATIVE RESULTS
+============================================================
+
+Preserve conditions where:
+
+- grokking does not occur
+- grokking is unstable
+- Fourier structure is weak
+- seeds diverge mechanistically
+- circuit matching fails
+- architecture changes eliminate convergence
+
+These could become some of the most interesting results.
+
+Never silently remove failed conditions.
+
+============================================================
+28. CENSORING
+============================================================
+
+As in Phase 2:
+
+"did not grok within max_steps"
+
+must not become:
+
+"does not grok."
+
+Record training-horizon censoring.
+
+============================================================
+29. ROBUSTNESS TABLE
+============================================================
+
+Generate a central table such as:
+
+Condition
+Seeds
+Grokked
+Median Grok Step
+Fourier Similarity
+CKA
+Circuit Similarity
+
+Do NOT fabricate values.
+
+Save:
+
+robustness_summary.csv
+
+============================================================
+30. FACTOR EFFECT TABLE
+============================================================
+
+Generate:
+
+factor_effects.csv
+
+For each changed factor report descriptive differences relative to the
+baseline.
+
+Example:
+
+factor = train_fraction
+value = 0.20
+
+delta_median_grokking_step
+delta_fourier_similarity
+delta_CKA
+
+Use confidence intervals where statistically appropriate and enough
+replicates exist.
+
+============================================================
+31. BOOTSTRAP UNCERTAINTY
+============================================================
+
+Where useful, implement bootstrap confidence intervals across seeds.
+
+Use a fixed bootstrap random seed.
+
+For example:
+
+95% bootstrap CI
+
+for:
+
+median grokking step
+mean Fourier similarity
+mean CKA
+
+Do not use bootstrap results when the sample is too small to be
+meaningful without warning.
+
+============================================================
+32. EFFECT SIZES
+============================================================
+
+Where comparing two conditions, report useful effect sizes rather than
+only significance tests.
+
+Do not make p-values the centerpiece of the analysis.
+
+Focus on:
+
+magnitude
+variability
+uncertainty
+replication across seeds.
+
+============================================================
+33. CORE FIGURE 1 — TRAIN FRACTION
+============================================================
+
+Create:
+
+train_fraction_robustness.png
+
+Show how train fraction affects:
+
+grokking timing
+
+and/or
+
+mechanistic similarity.
+
+============================================================
+34. CORE FIGURE 2 — PRIME SIZE
+============================================================
+
+Create:
+
+prime_size_robustness.png
+
+Show:
+
+prime size
+vs
+grokking dynamics
+and Fourier properties.
+
+============================================================
+35. CORE FIGURE 3 — MODEL WIDTH
+============================================================
+
+Create:
+
+width_mechanistic_convergence.png
+
+Compare mechanistic similarity across:
+
+64
+128
+256.
+
+============================================================
+36. CORE FIGURE 4 — OPERATION
+============================================================
+
+Create:
+
+operation_comparison.png
+
+Compare:
+
+addition
+subtraction
+multiplication.
+
+============================================================
+37. CORE FIGURE 5 — GLOBAL ROBUSTNESS
+============================================================
+
+Create a matrix:
+
+rows = experimental conditions
+
+columns = metrics
+
+Example columns:
+
+grokking reliability
+Fourier convergence
+representation convergence
+causal convergence
+
+File:
+
+robustness_matrix.png
+
+Do not collapse metrics into arbitrary rankings.
+
+============================================================
+38. CORE FIGURE 6 — SEED VS CONDITION VARIANCE
+============================================================
+
+Visualize:
+
+within-condition variability
+
+versus
+
+between-condition variability.
+
+File:
+
+seed_vs_condition_variance.png
+
+This can become an important paper figure.
+
+============================================================
+39. CORE FIGURE 7 — FREQUENCY ROBUSTNESS
+============================================================
+
+Create:
+
+frequency_robustness_heatmap.png
+
+Rows:
+
+experimental conditions
+
+Columns:
+
+Fourier frequencies
+
+Values:
+
+mean normalized Fourier energy across seeds.
+
+============================================================
+40. CORE FIGURE 8 — MECHANISTIC STABILITY
+============================================================
+
+Create:
+
+mechanistic_stability.png
+
+Show how:
+
+Fourier similarity
+CKA
+causal similarity
+
+change when moving away from baseline conditions.
+
+============================================================
+41. ABLATION STUDY — REMOVE WEIGHT DECAY
+============================================================
+
+Include an especially important control:
+
+weight_decay = 0
+
+if computationally feasible.
+
+Compare against the validated grokking baseline.
+
+Question:
+
+Does the characteristic grokking/mechanistic trajectory persist
+without regularization?
+
+Do not assume the answer.
+
+============================================================
+42. ABLATION STUDY — REDUCE TRAINING
+============================================================
+
+Use checkpoints before grokking as controls.
+
+Compare:
+
+memorized-but-not-grokked
+
+versus
+
+grokked
+
+models.
+
+This tests whether the Phase-3 mechanisms specifically correlate with
+generalization rather than memorization alone.
+
+============================================================
+43. ABLATION STUDY — RANDOM LABEL CONTROL
+============================================================
+
+Implement an optional controlled dataset where training targets are
+randomly permuted.
+
+This model may memorize but should not be assumed to generalize.
+
+Compare internal Fourier structure against real modular arithmetic.
+
+This is an important control for determining whether Fourier structure
+is specifically associated with learning the modular rule.
+
+Use only a small number of seeds initially.
+
+============================================================
+44. RANDOM LABEL SAFETY CHECK
+============================================================
+
+Never evaluate a random-label model as though its target function were
+modular arithmetic.
+
+Clearly mark:
+
+control = random_labels
+
+in every result.
+
+============================================================
+45. ABLATION STUDY — SHUFFLED INPUT CONTROL
+============================================================
+
+Optionally create a controlled transformation that disrupts arithmetic
+structure while preserving basic dataset statistics.
+
+Use this only if mathematically well-defined.
+
+Document exactly what is shuffled.
+
+============================================================
+46. BASELINE COMPARISON
+============================================================
+
+Every robustness condition must point back to a baseline experiment.
+
+Store:
+
+baseline_condition_id
+
+This prevents accidental comparisons between unrelated configurations.
+
+============================================================
+47. RESULT MANIFEST
+============================================================
+
+For every Phase-4 run save:
+
+condition_id
+baseline_condition_id
+factor_changed
+factor_value
+data_seed
+model_seed
+dataset_hash
+model configuration
+optimizer configuration
+training configuration
+device
+runtime
+checkpoint paths
+analysis paths
+
+============================================================
+48. REPRODUCIBILITY
+============================================================
+
+Save:
+
+Python version
+PyTorch version
+NumPy version
+platform
+git commit hash if available
+configuration
+random seeds
+
+Do not silently modify configs during execution.
+
+============================================================
+49. RESUME SUPPORT
+============================================================
+
+Phase 4 MUST be resumable.
+
+If 70/100 runs are complete:
+
+restart should continue with run 71.
+
+Completed runs should not be repeated unless:
+
+--force
+
+is provided.
+
+============================================================
+50. FAILURE HANDLING
+============================================================
+
+If one condition crashes:
+
+record failure metadata
+
+and continue with remaining experiments where safe.
+
+Save:
+
+failed_runs.csv
+
+Include:
+
+condition
+seed
+error type
+error message
+
+Do not classify software crashes as scientific negative results.
+
+============================================================
+51. M1 RESOURCE MANAGEMENT
+============================================================
+
+Run models sequentially.
+
+Never train multiple large configurations simultaneously.
+
+After every run:
+
+release model
+release optimizer
+release large tensors
+
+Use MPS where supported.
+
+CPU fallback otherwise.
+
+No CUDA assumptions.
+
+============================================================
+52. DISK MANAGEMENT
+============================================================
+
+Phase 4 could create many checkpoints.
+
+Do NOT save thousands of unnecessary checkpoints.
+
+For robustness experiments preserve at minimum:
+
+initial
+memorization
+grokking
+final
+
+For conditions selected for detailed Phase-3-style analysis, preserve
+additional checkpoints if needed.
+
+============================================================
+53. PHASE-4 ANALYSIS COMMANDS
+============================================================
+
+Support:
+
+python main.py \
+    --config configs/phase4.yaml \
+    --phase4 train_fraction
+
+python main.py \
+    --config configs/phase4.yaml \
+    --phase4 prime
+
+python main.py \
+    --config configs/phase4.yaml \
+    --phase4 width
+
+python main.py \
+    --config configs/phase4.yaml \
+    --phase4 operation
+
+python main.py \
+    --config configs/phase4.yaml \
+    --phase4 data_seed
+
+Also support:
+
+--model-seed
+--factor-value
+--resume
+--force
+
+============================================================
+54. DRY RUN
+============================================================
+
+Implement:
+
+--dry-run
+
+Example:
+
+python main.py \
+    --config configs/phase4.yaml \
+    --phase4 core \
+    --dry-run
+
+It should print:
+
+conditions
+seeds
+total runs
+estimated runtime
+estimated checkpoint storage
+
+without training anything.
+
+============================================================
+55. SMOKE TEST
+============================================================
+
+Before real experiments:
+
+Use:
+
+one factor
+two values
+two seeds
+very small max_steps
+
+Verify:
+
+- configurations generated correctly
+- output directories isolated
+- checkpoints isolated
+- aggregation works
+- Phase-3 analysis can consume selected Phase-4 checkpoints
+- resume works
+
+Store smoke tests separately.
+
+============================================================
+56. PHASE-4 MAIN SCIENTIFIC INTERPRETATION
+============================================================
+
+The final results should let us distinguish possibilities such as:
+
+RESULT TYPE A
+
+Mechanistic convergence remains strong across:
+data fractions
+prime sizes
+architectures
+and optimization conditions.
+
+This would provide evidence that the observed convergence is robust.
+
+RESULT TYPE B
+
+Convergence occurs only under certain conditions.
+
+This would suggest mechanistic convergence is regime-dependent.
+
+RESULT TYPE C
+
+Behavioral convergence is robust but mechanistic convergence is not.
+
+Different models solve the same task reliably using different internal
+organizations.
+
+RESULT TYPE D
+
+Algorithm-level Fourier structure is robust, but implementation-level
+circuits vary.
+
+This would suggest convergence at the algorithmic representation level
+but diversity at the component/circuit level.
+
+Do NOT select a conclusion before seeing the data.
+
+============================================================
+57. PAPER-LEVEL ANALYSIS
+============================================================
+
+Generate a final machine-readable Phase-4 summary containing:
+
+baseline results
+seed variance
+condition variance
+Fourier robustness
+representation robustness
+causal robustness
+architecture robustness
+task robustness
+negative results
+censored runs
+
+Save:
+
+results/phase4/aggregate/paper_summary.json
+
+Do not generate fake prose conclusions.
+
+============================================================
+58. README
+============================================================
+
+Update README with:
+
+Phase 4 goals
+experimental factors
+controls
+compute strategy
+how to run dry-run
+how to run individual factors
+how to resume
+how to aggregate
+how Phase 4 connects to Phase 3
+
+============================================================
+59. TESTS
+============================================================
+
+Add tests for:
+
+condition generation
+single-factor isolation
+dataset reproducibility
+random-label control
+configuration hashing
+resume detection
+aggregation
+baseline matching
+
+Critical test:
+
+When varying one factor, verify that all unrelated baseline
+parameters remain unchanged.
+
+============================================================
+60. IMPLEMENTATION PRIORITY
+============================================================
+
+Implement all infrastructure.
+
+BUT recommend running experiments in this order:
+
+FIRST:
+
+Train Fraction
+Prime Size
+Model Width
+Operation
+
+SECOND:
+
+Data Split
+Depth
+Head Count
+
+THIRD:
+
+Weight Decay
+Learning Rate
+Additional controls
+
+Do not automatically launch all experiments.
+
+============================================================
+61. FINAL RESEARCH PIPELINE
+============================================================
+
+PHASE 1
+Reproduce Grokking
+        |
+        v
+PHASE 2
+Seed Variance
+        |
+        v
+PHASE 3
+Mechanistic Analysis
+        |
+        +-------------------------------+
+        |                               |
+        v                               v
+Fourier Convergence              Circuit Convergence
+        |                               |
+        +---------------+---------------+
+                        |
+                        v
+                     PHASE 4
+                        |
+              ROBUSTNESS TESTING
+                        |
+     +------------------+-------------------+
+     |                  |                   |
+     v                  v                   v
+    DATA              MODEL               TASK
+     |                  |                   |
+Train Fraction         Width            Addition
+Prime Size             Depth            Subtraction
+Data Split             Heads            Multiplication
+     |                  |                   |
+     +------------------+-------------------+
+                        |
+                        v
+                 OPTIMIZATION
+                        |
+                Weight Decay
+                Learning Rate
+                        |
+                        v
+                     CONTROLS
+                        |
+          +-------------+-------------+
+          |                           |
+          v                           v
+  Memorization-only             Random Labels
+          |                           |
+          +-------------+-------------+
+                        |
+                        v
+             ROBUSTNESS ANALYSIS
+                        |
+             +----------+----------+
+             |          |          |
+             v          v          v
+          Fourier      CKA       Causal
+         Stability   Stability   Stability
+             |          |          |
+             +----------+----------+
+                        |
+                        v
+             FINAL PAPER CONCLUSION
+
+============================================================
+62. AFTER IMPLEMENTATION
+============================================================
+
+After implementing Phase 4:
+
+1. Inspect the repository.
+2. Run tests.
+3. Run smoke tests only.
+4. Run --dry-run for each major experiment group.
+5. Calculate total proposed experiment count.
+6. Estimate runtime based on actual previous measurements.
+7. Estimate disk usage.
+8. Identify the minimum experiment subset appropriate for an M1.
+9. DO NOT launch the full experiment automatically.
+
+Report:
+
+- files created
+- files modified
+- tests
+- smoke-test results
+- number of proposed runs
+- estimated runtime
+- estimated disk usage
+- recommended M1 experiment subset
+- exact commands for each experiment
+- exact resume command
+
+Implement Phase 4 now.

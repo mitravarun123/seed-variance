@@ -1,0 +1,22 @@
+{
+  "seed": 1,
+  "stage": "final",
+  "checkpoint_path": "checkpoints/laptop_pilot/phase2/seed_1/final.pt",
+  "model_hash": "3bbcff2e4cbf5bed85ed92ffa3dc8d0e0234642a97acb1320f9c3147f578a5a6",
+  "source_grokking_detected": false,
+  "candidate_components_by_single_ablation_delta_loss_only": [
+    {
+      "kind": "head",
+      "layer": 0,
+      "head": 0,
+      "delta_loss": 0.3714160295093761
+    },
+    {
+      "kind": "mlp",
+      "layer": 0,
+      "head": null,
+      "delta_loss": 0.9893741653246038
+    }
+  ],
+  "interpretation_status": "descriptive; ablation alone is not a complete circuit claim"
+}

@@ -1,0 +1,7 @@
+seed,layer,head,random_delta_logit_margin,top_component_mean_delta_logit_margin,sampling_seed,note
+0,0,0,0.87234926924986,0.3703580421559951,5083,randomly selected from measured head ablations; descriptive control
+0,0,1,-0.1316331849378698,0.3703580421559951,5083,randomly selected from measured head ablations; descriptive control
+1,0,1,-1.4239855443730074,-0.9084457867285785,5084,randomly selected from measured head ablations; descriptive control
+1,0,0,-0.3929060290841495,-0.9084457867285785,5084,randomly selected from measured head ablations; descriptive control
+2,0,1,-0.33380415579851935,-0.08370220380670884,5085,randomly selected from measured head ablations; descriptive control
+2,0,0,0.16639974818510167,-0.08370220380670884,5085,randomly selected from measured head ablations; descriptive control

@@ -1,0 +1,7 @@
+seed_a,layer_a,head_a,seed_b,layer_b,head_b,head_index_a,head_index_b,functional_similarity,accepted_match
+0,0,0,1,0,1,0,1,0.14285714285714282,False
+0,0,1,1,0,0,1,0,0.14285714285714282,False
+0,0,0,2,0,1,0,1,0.14285714285714282,False
+0,0,1,2,0,0,1,0,0.14285714285714282,False
+1,0,0,2,0,0,0,0,0.42857142857142844,True
+1,0,1,2,0,1,1,1,0.42857142857142844,True

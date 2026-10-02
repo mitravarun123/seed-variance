@@ -1,0 +1,1077 @@
+Continue my existing research project:
+
+"Seed Variance in Grokking Circuits: Do Different Random Seeds Learn the Same Fourier Algorithm for Modular Arithmetic?"
+
+IMPORTANT:
+Phase 1 is already implemented.
+
+DO NOT rebuild the project from scratch.
+DO NOT replace the working Phase-1 training pipeline.
+Inspect the existing codebase first and extend it cleanly.
+
+============================================================
+PHASE 2 — MULTI-SEED GROKKING EXPERIMENT
+============================================================
+
+Phase 1 established a single-seed baseline for:
+
+(a + b) mod p = c
+
+using a tiny Transformer.
+
+Phase 2 asks:
+
+"How consistent is grokking across random initialization seeds when architecture, dataset construction, optimizer, and hyperparameters are held fixed?"
+
+This phase should run multiple independent training experiments and quantitatively compare:
+
+- whether grokking occurs
+- when grokking occurs
+- memorization time
+- delay between memorization and grokking
+- final generalization
+- variability across seeds
+
+DO NOT implement Fourier/circuit analysis yet.
+
+That belongs to Phase 3.
+
+============================================================
+1. EXPERIMENTAL PRINCIPLE
+============================================================
+
+The primary experiment must change ONLY:
+
+random seed
+
+Everything else should remain fixed:
+
+- prime
+- operation
+- train fraction
+- architecture
+- optimizer
+- learning rate
+- weight decay
+- maximum training steps
+- grokking thresholds
+
+This is necessary because the research question concerns seed variance.
+
+============================================================
+2. IMPORTANT: SEPARATE TWO TYPES OF RANDOMNESS
+============================================================
+
+The current Phase-1 seed may control both:
+
+1. dataset train/test split
+2. model initialization/training randomness
+
+For serious experiments, separate these.
+
+Add:
+
+data_seed
+model_seed
+
+PRIMARY EXPERIMENT:
+
+data_seed = fixed value, e.g. 42
+
+model_seed = varied
+
+Example:
+
+data_seed = 42
+
+model_seed ∈
+[
+0,
+1,
+2,
+3,
+4,
+5,
+6,
+7,
+8,
+9
+]
+
+This ensures every model sees EXACTLY the same train/test split.
+
+The only major experimental variable should initially be model/training randomness.
+
+Make sure the same training examples are used for every seed.
+
+Save a checksum/hash or deterministic identifier for the dataset split so we can verify this.
+
+============================================================
+3. NUMBER OF SEEDS
+============================================================
+
+Support arbitrary seed lists.
+
+Configuration example:
+
+multi_seed:
+
+    enabled: true
+
+    data_seed: 42
+
+    model_seeds:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+
+Start with 10 seeds.
+
+The system should later support 20 or 30 seeds without code changes.
+
+DO NOT run all seeds automatically during development.
+
+First smoke-test with two seeds and very few steps.
+
+============================================================
+4. PROJECT STRUCTURE
+============================================================
+
+Extend the existing project.
+
+Add files such as:
+
+experiments/
+    multi_seed.py
+
+analysis/
+    seed_variance.py
+
+Optionally:
+
+configs/
+    multi_seed.yaml
+
+Do NOT duplicate the entire trainer.
+
+Reuse the existing Phase-1:
+
+dataset
+model
+trainer
+metrics
+checkpointing
+grokking detection
+
+============================================================
+5. OUTPUT STRUCTURE
+============================================================
+
+Create:
+
+results/
+    multi_seed/
+        seed_0/
+        seed_1/
+        seed_2/
+        ...
+        aggregate_metrics.csv
+        aggregate_summary.json
+        grokking_steps.png
+        grokking_delay.png
+        accuracy_curves.png
+        loss_curves.png
+        seed_summary.png
+
+Each seed directory should preserve its normal:
+
+metrics.csv
+summary.json
+config.yaml
+training_curves.png
+
+Checkpoints should remain separated:
+
+checkpoints/
+    seed_0/
+    seed_1/
+    ...
+
+Never overwrite another seed's checkpoints.
+
+============================================================
+6. AGGREGATE METRICS
+============================================================
+
+Generate:
+
+aggregate_metrics.csv
+
+One row per model seed.
+
+Required columns:
+
+model_seed
+data_seed
+dataset_split_hash
+parameter_count
+
+memorization_detected
+memorization_step
+memorization_time_seconds
+
+grokking_detected
+grokking_step
+grokking_time_seconds
+
+grokking_delay_steps
+grokking_delay_seconds
+
+best_test_accuracy
+final_train_accuracy
+final_test_accuracy
+
+final_train_loss
+final_test_loss
+
+total_training_steps
+total_training_time_seconds
+
+The definition of:
+
+grokking_delay_steps
+
+should be:
+
+grokking_step - memorization_step
+
+when both exist.
+
+Do not invent values when grokking does not occur.
+
+Use NaN/null appropriately.
+
+============================================================
+7. MEMORIZATION DEFINITION
+============================================================
+
+Add an explicit configurable memorization threshold.
+
+Example:
+
+memorization:
+    train_accuracy_threshold: 0.99
+
+Record the FIRST optimization step where:
+
+train_accuracy >= threshold
+
+Save:
+
+memorization_step
+memorization_time_seconds
+
+Do not confuse memorization with grokking.
+
+============================================================
+8. GROKKING DEFINITION
+============================================================
+
+Continue using configurable criteria.
+
+Example:
+
+train_accuracy >= 0.99
+test_accuracy >= 0.95
+
+But make detection more robust against a single noisy evaluation.
+
+Add:
+
+required_consecutive_evals: 3
+
+For example, grokking is confirmed when the threshold is satisfied for three consecutive evaluations.
+
+Record both if useful:
+
+first_threshold_crossing_step
+
+and
+
+confirmed_grokking_step
+
+Use the confirmed step for the main aggregate analysis.
+
+============================================================
+9. FAILED-TO-GROK RUNS
+============================================================
+
+This is extremely important.
+
+If a seed reaches max_steps without satisfying the grokking criterion:
+
+DO NOT discard it.
+DO NOT rerun it secretly.
+DO NOT change its hyperparameters individually.
+
+Record:
+
+grokking_detected = false
+
+and:
+
+grokking_step = null
+
+These negative results are scientifically important.
+
+============================================================
+10. RESUMABILITY
+============================================================
+
+Multi-seed experiments may take a long time.
+
+The runner must be resumable.
+
+Example:
+
+python main.py \
+    --config configs/multi_seed.yaml \
+    --multi-seed
+
+If:
+
+seed_0 = completed
+seed_1 = completed
+seed_2 = interrupted
+
+then restarting should:
+
+skip seed_0
+skip seed_1
+resume seed_2
+continue remaining seeds
+
+DO NOT retrain completed experiments unless:
+
+--force
+
+is supplied.
+
+============================================================
+11. INDIVIDUAL SEED EXECUTION
+============================================================
+
+Support running one seed independently.
+
+Example:
+
+python main.py \
+    --config configs/multi_seed.yaml \
+    --model-seed 7
+
+This is useful for debugging and interrupted runs.
+
+============================================================
+12. EXPERIMENT MANIFEST
+============================================================
+
+Create an experiment manifest before running.
+
+Example:
+
+results/multi_seed/experiment_manifest.json
+
+Include:
+
+experiment_name
+timestamp
+git commit if available
+device
+PyTorch version
+Python version
+platform
+data_seed
+model_seeds
+dataset_split_hash
+prime
+operation
+train_fraction
+model configuration
+optimizer configuration
+training configuration
+grokking criteria
+
+This improves reproducibility.
+
+============================================================
+13. DATASET VERIFICATION
+============================================================
+
+Before training multiple models, verify that EVERY seed receives the same:
+
+training inputs
+training targets
+test inputs
+test targets
+
+when data_seed is fixed.
+
+Compute deterministic hashes.
+
+For example:
+
+train_split_hash
+test_split_hash
+
+Store them.
+
+If hashes unexpectedly differ across model seeds:
+
+STOP THE EXPERIMENT.
+
+Raise an error.
+
+============================================================
+14. AGGREGATE STATISTICS
+============================================================
+
+After all available runs finish, calculate descriptive statistics.
+
+For seeds that grokked:
+
+number_of_seeds
+number_grokked
+fraction_grokked
+
+memorization_step:
+mean
+std
+median
+min
+max
+
+grokking_step:
+mean
+std
+median
+min
+max
+
+grokking_delay_steps:
+mean
+std
+median
+min
+max
+
+best_test_accuracy:
+mean
+std
+
+final_test_accuracy:
+mean
+std
+
+Save these in:
+
+aggregate_summary.json
+
+Do not hide non-grokking runs.
+
+============================================================
+15. IMPORTANT: CENSORED RUNS
+============================================================
+
+Recognize that a seed which has not grokked by max_steps is not necessarily evidence that it would NEVER grok.
+
+Treat it as:
+
+"not observed to grok within the training horizon"
+
+rather than:
+
+"incapable of grokking"
+
+Use this terminology in README and summaries.
+
+============================================================
+16. PLOTS
+============================================================
+
+Create publication-quality plots using matplotlib only.
+
+Do not use seaborn.
+
+Do not manually specify colors.
+
+------------------------------------------------------------
+PLOT 1 — ACCURACY TRAJECTORIES
+------------------------------------------------------------
+
+Plot test accuracy vs optimization step for every seed.
+
+Overlay the individual trajectories.
+
+Also show an aggregate mean trajectory if evaluation steps align.
+
+Optionally include variability around the mean.
+
+Save:
+
+accuracy_curves.png
+
+------------------------------------------------------------
+PLOT 2 — TRAINING ACCURACY
+------------------------------------------------------------
+
+Plot training accuracy vs step across seeds.
+
+This helps visualize memorization.
+
+------------------------------------------------------------
+PLOT 3 — GROKKING STEP BY SEED
+------------------------------------------------------------
+
+X-axis:
+
+model seed
+
+Y-axis:
+
+confirmed grokking step
+
+For runs that did not grok within max_steps, represent them clearly as censored/non-grokking rather than assigning a fake grokking step.
+
+Save:
+
+grokking_steps.png
+
+------------------------------------------------------------
+PLOT 4 — GROKKING DELAY
+------------------------------------------------------------
+
+For seeds that grokked:
+
+delay =
+grokking_step - memorization_step
+
+Plot delay by seed.
+
+Save:
+
+grokking_delay.png
+
+------------------------------------------------------------
+PLOT 5 — LOSS CURVES
+------------------------------------------------------------
+
+Plot test loss trajectories across seeds.
+
+Optionally also create train loss trajectories.
+
+Save:
+
+loss_curves.png
+
+------------------------------------------------------------
+PLOT 6 — DISTRIBUTION
+------------------------------------------------------------
+
+Plot the distribution of grokking steps among seeds where grokking was observed.
+
+Because the initial sample may only contain 10 seeds, avoid overly elaborate density estimation.
+
+A histogram or simple empirical representation is sufficient.
+
+============================================================
+17. SUMMARY TABLE
+============================================================
+
+Generate a readable table such as:
+
+Seed | Memorization | Grokking | Delay | Best Test Acc | Status
+----------------------------------------------------------------
+0    | ...          | ...      | ...   | ...           | Grokked
+1    | ...          | ...      | ...   | ...           | Grokked
+2    | ...          | —        | —     | ...           | Censored
+...
+
+Save as:
+
+seed_summary.csv
+
+and print it at the end of the experiment.
+
+============================================================
+18. RESEARCH QUESTIONS TO ANSWER
+============================================================
+
+Phase 2 should allow us to answer:
+
+RQ1:
+Does grokking reliably occur across random initializations?
+
+RQ2:
+How much does memorization time vary across seeds?
+
+RQ3:
+How much does grokking time vary across seeds?
+
+RQ4:
+How variable is the delay between memorization and generalization?
+
+RQ5:
+Can models achieve similar final accuracy while following different training trajectories?
+
+RQ6:
+Are there seeds where grokking is not observed within the fixed training horizon?
+
+Do NOT attempt to answer WHY these differences happen yet.
+
+That comes later with mechanistic analysis.
+
+============================================================
+19. STATISTICAL ANALYSIS
+============================================================
+
+Implement basic descriptive statistics.
+
+Do not overclaim statistical significance with only 10 seeds.
+
+Calculate:
+
+mean
+standard deviation
+median
+interquartile range
+min
+max
+
+for appropriate metrics.
+
+Also calculate:
+
+coefficient of variation
+
+for grokking step when meaningful:
+
+CV = std / mean
+
+Do not calculate meaningless statistics for tiny or insufficient samples.
+
+============================================================
+20. OPTIONAL SURVIVAL-STYLE REPRESENTATION
+============================================================
+
+Because some models may not grok before max_steps, implement a simple empirical visualization showing:
+
+fraction of runs that have NOT yet grokked
+
+versus
+
+training step.
+
+This is similar to a survival curve.
+
+Do not require a heavy survival-analysis dependency.
+
+Implement the empirical curve directly using NumPy/Pandas/Matplotlib.
+
+Call it:
+
+grokking_survival.png
+
+Clearly explain:
+
+A run ending without grokking is right-censored at max_steps.
+
+This representation prevents us from simply deleting failed-to-grok seeds.
+
+============================================================
+21. CONFIGURATION
+============================================================
+
+Create:
+
+configs/multi_seed.yaml
+
+based on the validated Phase-1 hyperparameters.
+
+Example:
+
+experiment:
+    name: modular_addition_multiseed
+
+data:
+    prime: 113
+    operation: addition
+    train_fraction: 0.30
+    data_seed: 42
+
+model:
+    d_model: 128
+    n_heads: 4
+    n_layers: 2
+    d_mlp: 512
+    dropout: 0.0
+
+training:
+    max_steps: 100000
+    batch_size: full
+    learning_rate: 0.001
+    weight_decay: 1.0
+    beta1: 0.9
+    beta2: 0.98
+
+    log_every: 100
+    eval_every: 100
+    checkpoint_every: 1000
+
+memorization:
+    train_accuracy_threshold: 0.99
+
+grokking:
+    train_accuracy_threshold: 0.99
+    test_accuracy_threshold: 0.95
+    required_consecutive_evals: 3
+    post_grok_steps: 2000
+
+multi_seed:
+    enabled: true
+
+    model_seeds:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+
+Do NOT blindly overwrite the hyperparameters that successfully produced grokking in Phase 1.
+
+If Phase-1 values differ from these example values, retain the validated Phase-1 settings.
+
+============================================================
+22. M1 MACBOOK REQUIREMENTS
+============================================================
+
+This still needs to work on:
+
+Apple M1 MacBook Air
+
+Use:
+
+MPS when available
+CPU otherwise
+
+No CUDA.
+
+Run seeds SEQUENTIALLY by default.
+
+DO NOT run 10 models simultaneously.
+
+Parallel training could cause memory pressure and thermal throttling on my laptop.
+
+Train:
+
+seed 0
+↓
+release unnecessary memory
+↓
+seed 1
+↓
+release memory
+↓
+seed 2
+...
+
+Between runs:
+
+delete unnecessary model/optimizer references
+
+and perform reasonable cleanup.
+
+Do not use CUDA-specific cache commands.
+
+============================================================
+23. TIME ESTIMATION
+============================================================
+
+After the two-seed smoke test, report approximately:
+
+time per 1,000 steps
+
+and extrapolate an approximate maximum runtime per seed.
+
+Clearly label this as an estimate.
+
+Do not fabricate timing before actually measuring it.
+
+============================================================
+24. CHECKPOINT POLICY
+============================================================
+
+For every model seed preserve:
+
+initial.pt
+
+memorization.pt
+
+grokking.pt
+
+final.pt
+
+This is VERY IMPORTANT.
+
+These checkpoints will be required in Phase 3.
+
+We will later compare internal representations:
+
+initialization
+vs
+memorization
+vs
+grokking
+vs
+final model
+
+If possible, also retain strategically spaced intermediate checkpoints.
+
+For example:
+
+0
+100
+500
+1000
+2000
+5000
+10000
+...
+
+but avoid excessive disk usage.
+
+Make checkpoint scheduling configurable.
+
+============================================================
+25. CRITICAL REQUIREMENT FOR PHASE 3
+============================================================
+
+The entire reason for Phase 2 is eventually to compare internal mechanisms.
+
+Therefore DO NOT save only metrics.
+
+We MUST preserve trained model checkpoints for every seed.
+
+At minimum preserve:
+
+initial
+memorization
+grokking
+final
+
+for every run.
+
+============================================================
+26. SMOKE TEST
+============================================================
+
+Before running the actual experiment:
+
+Run ONLY:
+
+model_seed = 0
+model_seed = 1
+
+with a very small max_steps value.
+
+Verify:
+
+- both runs start
+- same dataset hashes
+- different model initializations
+- separate checkpoints
+- separate metrics
+- aggregate CSV generation
+- aggregate JSON generation
+- plots generate correctly
+- resume functionality works
+
+DO NOT treat smoke-test results as research results.
+
+Store them separately, for example:
+
+results/smoke_tests/
+
+============================================================
+27. TEST MODEL INITIALIZATION DIFFERENCE
+============================================================
+
+Explicitly verify that model_seed changes initialization.
+
+For two models using different model seeds:
+
+compute a hash or summary of initial parameters.
+
+Confirm:
+
+initial_model_hash(seed_0)
+!=
+initial_model_hash(seed_1)
+
+while:
+
+dataset_hash(seed_0)
+==
+dataset_hash(seed_1)
+
+This is an important experimental sanity check.
+
+============================================================
+28. README
+============================================================
+
+Update README with:
+
+Phase 2 methodology
+
+Explain:
+
+- why data_seed is fixed
+- why model_seed varies
+- why many seeds are necessary
+- memorization definition
+- grokking definition
+- censored runs
+- aggregate metrics
+- checkpoint strategy
+- how to run all seeds
+- how to run one seed
+- how to resume experiments
+- how results feed into Phase 3
+
+============================================================
+29. CODE QUALITY
+============================================================
+
+Reuse Phase-1 code.
+
+Do not create:
+
+trainer2.py
+model2.py
+dataset2.py
+
+unless genuinely necessary.
+
+Refactor shared functionality cleanly instead.
+
+Preserve backward compatibility so:
+
+python main.py --config configs/base.yaml
+
+still works for the original single-seed experiment.
+
+============================================================
+30. DO NOT IMPLEMENT PHASE 3 YET
+============================================================
+
+Do NOT implement:
+
+Fourier decomposition
+Fourier basis analysis
+attention-head circuit discovery
+Q/K decomposition
+OV decomposition
+activation patching
+causal tracing
+cross-seed representation alignment
+circuit similarity
+
+Those belong to Phase 3.
+
+Phase 2 is purely:
+
+MULTI-SEED TRAINING
++
+REPRODUCIBILITY
++
+VARIANCE ANALYSIS
++
+CHECKPOINT COLLECTION
+
+============================================================
+31. AFTER IMPLEMENTATION
+============================================================
+
+Inspect the complete project.
+
+Run tests/smoke tests.
+
+Fix import/path/configuration problems.
+
+Then report:
+
+1. Files added
+2. Files modified
+3. Smoke-test results
+4. Dataset hash comparison
+5. Initial-model hash comparison
+6. Exact command for one seed
+7. Exact command for all 10 seeds
+8. Exact command for resuming
+9. Location of aggregate results
+10. Location of checkpoints
+
+Do NOT start the full 10-seed experiment automatically.
+
+============================================================
+FINAL PHASE-2 PIPELINE
+============================================================
+
+                 Fixed dataset split
+                        |
+                   data_seed=42
+                        |
+        +---------------+---------------+
+        |               |               |
+     Seed 0          Seed 1          Seed N
+        |               |               |
+        v               v               v
+  Tiny Transformer Tiny Transformer Tiny Transformer
+        |               |               |
+        v               v               v
+   Memorization     Memorization     Memorization
+        |               |               |
+        v               v               v
+     Grokking?        Grokking?        Grokking?
+        |               |               |
+        +---------------+---------------+
+                        |
+                        v
+               Aggregate Analysis
+                        |
+          +-------------+-------------+
+          |             |             |
+    Grokking Step   Grokking Delay   Accuracy
+       Variance        Variance      Variance
+          |             |             |
+          +-------------+-------------+
+                        |
+                        v
+                Saved Checkpoints
+                        |
+                        v
+                    PHASE 3
+
+Implement Phase 2 now.

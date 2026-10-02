@@ -1,0 +1,67 @@
+{
+  "status": "completed",
+  "analysis_mode": "all",
+  "seeds_requested": [
+    0,
+    1,
+    2
+  ],
+  "seeds_with_any_checkpoint": [
+    0,
+    1,
+    2
+  ],
+  "stages_requested": [
+    "initial",
+    "final"
+  ],
+  "stages_available": [
+    {
+      "seed": 0,
+      "stage": "initial",
+      "status": "available",
+      "checkpoint_path": "checkpoints/laptop_pilot/phase2/seed_0/initial.pt",
+      "grokking_detected_in_source_summary": false
+    },
+    {
+      "seed": 0,
+      "stage": "final",
+      "status": "available",
+      "checkpoint_path": "checkpoints/laptop_pilot/phase2/seed_0/final.pt",
+      "grokking_detected_in_source_summary": false
+    },
+    {
+      "seed": 1,
+      "stage": "initial",
+      "status": "available",
+      "checkpoint_path": "checkpoints/laptop_pilot/phase2/seed_1/initial.pt",
+      "grokking_detected_in_source_summary": false
+    },
+    {
+      "seed": 1,
+      "stage": "final",
+      "status": "available",
+      "checkpoint_path": "checkpoints/laptop_pilot/phase2/seed_1/final.pt",
+      "grokking_detected_in_source_summary": false
+    },
+    {
+      "seed": 2,
+      "stage": "initial",
+      "status": "available",
+      "checkpoint_path": "checkpoints/laptop_pilot/phase2/seed_2/initial.pt",
+      "grokking_detected_in_source_summary": false
+    },
+    {
+      "seed": 2,
+      "stage": "final",
+      "status": "available",
+      "checkpoint_path": "checkpoints/laptop_pilot/phase2/seed_2/final.pt",
+      "grokking_detected_in_source_summary": false
+    }
+  ],
+  "no_grokking_checkpoint_is_not_interpreted_as_a_negative_causal_result": true,
+  "dataset_split_hash": "fac9aa2a3cbb68a521bec8beb9af91c95f9a64a47318a59c4bfa847ed002856e",
+  "runtime_seconds": 10.79328727722168,
+  "outputs": "/Users/mitravarun/Desktop/seedvariacne/results/laptop_pilot/phase3",
+  "device": "cpu"
+}

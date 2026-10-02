@@ -1,0 +1,39 @@
+{
+  "analysis_version": 1,
+  "analysis_mode": "all",
+  "created_at_epoch_seconds": 1790970777.4189,
+  "environment": {
+    "python": "3.10.9 (v3.10.9:1dd9be6584, Dec  6 2022, 14:37:36) [Clang 13.0.0 (clang-1300.0.29.30)]",
+    "torch": "2.11.0",
+    "numpy": "1.26.4",
+    "platform": "macOS-13.3-arm64-arm-64bit",
+    "git_commit": null,
+    "device": "cpu"
+  },
+  "device": "cpu",
+  "source_checkpoint_root": "/Users/mitravarun/Desktop/seedvariacne/checkpoints/multi_seed",
+  "source_results_root": "/Users/mitravarun/Desktop/seedvariacne/results/multi_seed",
+  "dataset_split_hash": "a245c29e599b33341995d479832098ebcdd865d17b09ea3c134d6aae8410292f",
+  "train_split_hash": "cec45fbc5cf45ff06ba2ef1fcdf3e1f8248a23bd0a2ab31ad53b6bfa2433f291",
+  "test_split_hash": "59fd7dee86b8fe3062d6866746feae12aaca55614a24a6dbaecefbafb3933305",
+  "config_hash": "856b566266fe43a183ac32a1cc81b47d59c3843f700b5e7a10bfc801b478adff",
+  "seeds_requested": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "stages_requested": [
+    "initial",
+    "memorization",
+    "grokking",
+    "final"
+  ],
+  "checkpoint_files_are_read_only": true
+}

@@ -1,0 +1,7 @@
+seed,stage,status,checkpoint_path,grokking_detected_in_source_summary
+0,initial,available,checkpoints/laptop_pilot/phase2/seed_0/initial.pt,False
+0,final,available,checkpoints/laptop_pilot/phase2/seed_0/final.pt,False
+1,initial,available,checkpoints/laptop_pilot/phase2/seed_1/initial.pt,False
+1,final,available,checkpoints/laptop_pilot/phase2/seed_1/final.pt,False
+2,initial,available,checkpoints/laptop_pilot/phase2/seed_2/initial.pt,False
+2,final,available,checkpoints/laptop_pilot/phase2/seed_2/final.pt,False

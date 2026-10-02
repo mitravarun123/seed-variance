@@ -1,0 +1,1573 @@
+Continue my existing research project:
+
+"Seed Variance in Grokking Circuits: Do Different Random Seeds Learn the Same Fourier Algorithm for Modular Arithmetic?"
+
+PHASE 1:
+Single-seed grokking baseline.
+
+PHASE 2:
+Multi-seed training with a fixed dataset split and varying model seeds.
+
+PHASE 3:
+MECHANISTIC INTERPRETABILITY + FOURIER ANALYSIS + CROSS-SEED CIRCUIT COMPARISON.
+
+IMPORTANT:
+
+DO NOT rebuild the project.
+DO NOT retrain models unless explicitly required.
+DO NOT change Phase-1/Phase-2 hyperparameters.
+DO NOT overwrite existing checkpoints or results.
+
+Inspect the existing repository first.
+
+Reuse the trained checkpoints from Phase 2.
+
+The central research question is now:
+
+"Do independently trained Transformers that grok modular arithmetic converge to the same internal Fourier-based algorithm, or can they reach the same behavior through different circuits?"
+
+============================================================
+1. PHASE 3 RESEARCH QUESTIONS
+============================================================
+
+Answer the following questions.
+
+RQ1 — FOURIER REPRESENTATIONS
+
+Do independently trained models develop similar Fourier structure in:
+
+- token embeddings
+- residual stream representations
+- MLP activations
+- attention-related representations
+- output/unembedding representations?
+
+RQ2 — FREQUENCY SELECTION
+
+Which Fourier frequencies are used by each seed?
+
+Do different seeds:
+
+A. select the same frequencies?
+B. select different but functionally equivalent frequencies?
+C. distribute computation differently?
+
+RQ3 — TRAINING-STAGE EMERGENCE
+
+Using saved checkpoints:
+
+initial
+memorization
+grokking
+final
+
+determine WHEN Fourier structure emerges.
+
+RQ4 — CIRCUIT DISCOVERY
+
+Which:
+
+- attention heads
+- MLP layers
+- residual components
+
+are causally important for modular addition?
+
+RQ5 — CROSS-SEED CIRCUIT SIMILARITY
+
+Do different seeds implement the solution using:
+
+- the same heads?
+- equivalent heads in different positions?
+- different MLPs?
+- distributed representations?
+- different internal circuits?
+
+RQ6 — MECHANISTIC CONVERGENCE
+
+Separate:
+
+BEHAVIORAL CONVERGENCE
+
+from
+
+REPRESENTATIONAL CONVERGENCE
+
+from
+
+CAUSAL / CIRCUIT CONVERGENCE.
+
+Two models achieving 100% test accuracy DOES NOT imply they learned the same algorithm internally.
+
+============================================================
+2. CHECKPOINTS
+============================================================
+
+Phase 2 should have produced checkpoints like:
+
+checkpoints/
+    seed_0/
+        initial.pt
+        memorization.pt
+        grokking.pt
+        final.pt
+
+    seed_1/
+        initial.pt
+        memorization.pt
+        grokking.pt
+        final.pt
+
+    ...
+
+Load these existing checkpoints.
+
+Never overwrite them.
+
+Phase-3 outputs should go somewhere separate:
+
+results/
+    phase3/
+        fourier/
+        activations/
+        circuits/
+        ablations/
+        similarity/
+        figures/
+        tables/
+        cache/
+
+============================================================
+3. PROJECT STRUCTURE
+============================================================
+
+Extend the existing project with modules such as:
+
+analysis/
+    fourier.py
+    activation_extractor.py
+    representation_analysis.py
+    frequency_analysis.py
+    attention_analysis.py
+    mlp_analysis.py
+    ablation.py
+    circuit_discovery.py
+    cross_seed_similarity.py
+    checkpoint_dynamics.py
+
+experiments/
+    phase3_fourier.py
+    phase3_circuits.py
+    phase3_cross_seed.py
+
+configs/
+    phase3.yaml
+
+Do not duplicate existing dataset/model/training functionality.
+
+============================================================
+4. IMPORTANT MATHEMATICAL BACKGROUND
+============================================================
+
+We are studying:
+
+c = (a + b) mod p
+
+where:
+
+a,b,c ∈ Z_p
+
+and p is typically:
+
+p = 113
+
+For modular arithmetic, construct Fourier basis functions over Z_p.
+
+For frequency k:
+
+cos_k(x) = cos(2πkx/p)
+
+sin_k(x) = sin(2πkx/p)
+
+for:
+
+k = 0,1,...,floor(p/2)
+
+Use normalized Fourier bases when appropriate.
+
+Implement this explicitly with NumPy/PyTorch.
+
+Do not rely on black-box packages for the main analysis.
+
+============================================================
+5. FOURIER BASIS MODULE
+============================================================
+
+Implement reusable functions for constructing the Fourier basis.
+
+Functions should include concepts such as:
+
+build_fourier_basis(p)
+
+fourier_transform_vector(...)
+
+fourier_transform_matrix(...)
+
+fourier_power(...)
+
+frequency_energy(...)
+
+dominant_frequencies(...)
+
+Validate the basis numerically.
+
+Check approximately:
+
+F.T @ F ≈ I
+
+when using an orthonormal representation.
+
+Include unit tests or numerical assertions.
+
+============================================================
+6. EMBEDDING FOURIER ANALYSIS
+============================================================
+
+For every seed and checkpoint analyze the learned number embeddings.
+
+Extract embeddings corresponding specifically to:
+
+0,...,p-1.
+
+Exclude special tokens such as:
+
++
+=
+
+from numerical Fourier analysis.
+
+Let the number embedding matrix be:
+
+E ∈ R^(p × d_model)
+
+Project the embedding dimensions into Fourier space.
+
+Measure:
+
+- Fourier coefficient magnitude
+- Fourier power
+- power per frequency
+- normalized frequency energy
+- cumulative energy
+- dominant frequencies
+
+For each seed create:
+
+embedding_fourier_power.png
+
+Also save raw numerical results to CSV/NPZ.
+
+============================================================
+7. OUTPUT / UNEMBEDDING ANALYSIS
+============================================================
+
+Perform equivalent analysis on the model's output projection.
+
+Determine whether output representations align with Fourier frequencies.
+
+Compare:
+
+embedding frequencies
+
+versus
+
+unembedding frequencies.
+
+Measure overlap between dominant frequency sets.
+
+============================================================
+8. FOURIER ANALYSIS ACROSS TRAINING
+============================================================
+
+This is critical.
+
+For every seed compare:
+
+initial
+↓
+memorization
+↓
+grokking
+↓
+final
+
+Track Fourier energy over training stage.
+
+We want to determine whether Fourier structure:
+
+- exists at initialization by chance
+- emerges during memorization
+- rapidly strengthens near grokking
+- continues sharpening after grokking
+
+Generate figures such as:
+
+fourier_energy_by_stage.png
+
+and preferably frequency × training-stage heatmaps.
+
+============================================================
+9. ACTIVATION EXTRACTION
+============================================================
+
+Implement hooks or clean model APIs to extract:
+
+- embeddings
+- residual stream before each block
+- residual stream after attention
+- residual stream after MLP
+- final residual stream
+- attention patterns
+- Q
+- K
+- V
+- attention head outputs
+- MLP hidden activations
+
+Do NOT store huge activation tensors unnecessarily.
+
+The dataset is small, but still implement:
+
+batched extraction
+selective hooks
+CPU transfer after extraction
+optional caching
+
+Save cached activations under:
+
+results/phase3/cache/
+
+Never keep every possible activation in memory simultaneously.
+
+============================================================
+10. RESIDUAL STREAM FOURIER ANALYSIS
+============================================================
+
+Analyze whether Fourier information becomes represented through the residual stream.
+
+For each layer/stage:
+
+Residual Layer 0
+Residual Layer 1
+...
+Final Residual
+
+Measure frequency-related structure.
+
+Possible methods:
+
+- Fourier projection
+- linear decoding of sin/cos components
+- variance explained by Fourier subspaces
+- representational similarity
+
+Generate:
+
+residual_fourier_by_layer.png
+
+This should help answer:
+
+"Where in the network does the Fourier representation become explicit?"
+
+============================================================
+11. FOURIER SUBSPACE PROBES
+============================================================
+
+For each frequency k define the 2D Fourier subspace:
+
+span{
+    cos(2πkx/p),
+    sin(2πkx/p)
+}
+
+Measure how strongly representations encode each subspace.
+
+Avoid relying only on visualization.
+
+Produce quantitative measures such as:
+
+- projection energy
+- explained variance
+- linear reconstruction quality
+- normalized subspace alignment
+
+============================================================
+12. FREQUENCY SELECTION
+============================================================
+
+For each seed determine its dominant frequencies.
+
+Create:
+
+seed_frequency_summary.csv
+
+Example:
+
+seed | frequency | embedding_energy | residual_energy | output_energy
+
+Also create a matrix:
+
+rows = seeds
+columns = frequencies
+values = normalized Fourier energy
+
+Plot:
+
+seed_frequency_heatmap.png
+
+This is one of the most important Phase-3 figures.
+
+============================================================
+13. FREQUENCY SET SIMILARITY
+============================================================
+
+Compare dominant frequency sets across seeds.
+
+Use metrics such as:
+
+Jaccard similarity
+
+for top-k frequency sets.
+
+For example:
+
+J(A,B) = |A ∩ B| / |A ∪ B|
+
+Calculate pairwise similarity.
+
+Generate:
+
+frequency_jaccard_matrix.csv
+
+and:
+
+frequency_jaccard_heatmap.png
+
+Test multiple top-k definitions rather than choosing one arbitrary cutoff.
+
+For example:
+
+top 3
+top 5
+top 10
+
+============================================================
+14. CONTINUOUS FOURIER PROFILE SIMILARITY
+============================================================
+
+Do not only compare discrete top-k sets.
+
+Compare complete normalized Fourier energy vectors.
+
+Use metrics such as:
+
+- cosine similarity
+- Pearson correlation
+- Spearman correlation
+
+Generate pairwise matrices:
+
+fourier_cosine_similarity.csv
+fourier_pearson_similarity.csv
+fourier_spearman_similarity.csv
+
+============================================================
+15. REPRESENTATIONAL SIMILARITY
+============================================================
+
+Raw neuron dimensions cannot be directly compared across independently trained models because hidden units can permute or rotate.
+
+Therefore DO NOT compare:
+
+neuron 17(seed A)
+
+directly with:
+
+neuron 17(seed B)
+
+as if neuron identities were aligned.
+
+Use representation-level similarity methods.
+
+Implement at least:
+
+Linear CKA
+
+for residual representations.
+
+Optionally implement:
+
+SVCCA
+
+if computationally practical.
+
+Prefer Linear CKA as the primary metric.
+
+For every pair of seeds compare equivalent layers.
+
+Generate:
+
+CKA(seed_i, seed_j, layer_l)
+
+and save pairwise similarity matrices.
+
+============================================================
+16. CROSS-LAYER ALIGNMENT
+============================================================
+
+Do not assume equivalent computations occur in identical layers.
+
+For seed A and seed B calculate:
+
+Layer_A × Layer_B
+
+CKA similarity.
+
+Example:
+
+           B:L0   B:L1   B:L2
+A:L0
+A:L1
+A:L2
+
+This can reveal layer shifts.
+
+Generate:
+
+cross_layer_cka_seed_A_seed_B.png
+
+for selected representative seed pairs.
+
+============================================================
+17. ATTENTION HEAD ANALYSIS
+============================================================
+
+For each attention head extract:
+
+attention patterns
+head outputs
+Q/K/V representations
+
+Measure head behavior on modular arithmetic inputs.
+
+Do NOT declare a head a "circuit component" simply because its attention pattern looks interesting.
+
+Attention visualization is correlational.
+
+Use it only to generate hypotheses.
+
+============================================================
+18. HEAD FUNCTIONAL SIGNATURES
+============================================================
+
+Create a functional signature for each head based on measurable behavior.
+
+Potential features:
+
+- attention entropy
+- attention to operand A
+- attention to operand B
+- attention to operator token
+- attention to prediction position
+- output norm
+- contribution to correct logits
+- ablation effect
+- frequency alignment
+
+Store:
+
+head_signatures.csv
+
+with:
+
+seed
+layer
+head
+checkpoint
+...
+
+============================================================
+19. CAUSAL HEAD ABLATION
+============================================================
+
+Implement attention-head ablation.
+
+For each head:
+
+1. evaluate baseline test performance
+2. ablate the head
+3. reevaluate
+4. record performance difference
+
+Possible ablation:
+
+zero the individual head output before concatenation/output projection.
+
+Measure:
+
+Δ accuracy
+Δ loss
+Δ correct-answer logit
+Δ logit margin
+
+Do not rely only on accuracy because a well-trained model may remain at near-perfect accuracy despite meaningful internal degradation.
+
+Logit-based effects are important.
+
+============================================================
+20. MLP ABLATION
+============================================================
+
+Perform equivalent analysis for MLP blocks.
+
+Ablate the output of each MLP block.
+
+Measure:
+
+Δ accuracy
+Δ loss
+Δ correct-answer logit
+Δ logit margin
+
+Save:
+
+mlp_ablation.csv
+
+============================================================
+21. COMPONENT IMPORTANCE
+============================================================
+
+For each seed construct a component importance profile.
+
+Example:
+
+Seed 0
+
+Layer 0 Head 0 -> effect
+Layer 0 Head 1 -> effect
+...
+Layer 1 Head 3 -> effect
+MLP 0 -> effect
+MLP 1 -> effect
+
+Normalize carefully when useful.
+
+Plot:
+
+component_importance_seed_X.png
+
+============================================================
+22. CIRCUIT DISCOVERY
+============================================================
+
+Define candidate circuit components using causal evidence.
+
+A candidate component should ideally satisfy more than one criterion:
+
+1. strong causal ablation effect
+2. interpretable functional signature
+3. Fourier/frequency alignment
+4. consistent contribution across examples
+
+Do not define circuits using attention visualization alone.
+
+============================================================
+23. COMBINATORIAL ABLATIONS
+============================================================
+
+For the strongest components test:
+
+single ablation
+pairwise ablation
+small grouped ablations
+
+This helps detect redundancy.
+
+For example:
+
+Head A alone
+Head B alone
+Head A + Head B
+
+If:
+
+effect(A+B) >> effect(A)+effect(B)
+
+or other non-additive behavior occurs, record it.
+
+Do NOT brute-force all possible subsets.
+
+Keep this computationally manageable.
+
+============================================================
+24. ACTIVATION PATCHING
+============================================================
+
+Implement targeted activation patching if the architecture permits it cleanly.
+
+Construct clean and corrupted examples.
+
+For example:
+
+Clean:
+(a,b) -> correct c
+
+Corrupted:
+(a',b) or (a,b')
+
+Patch activations from clean execution into corrupted execution.
+
+Measure recovery of:
+
+correct answer logit
+
+or:
+
+correct-answer logit margin.
+
+Perform patching at:
+
+- residual stream
+- attention output
+- MLP output
+
+Use this to localize causally important computation.
+
+Keep the initial patching experiment small and targeted.
+
+============================================================
+25. LOGIT ATTRIBUTION
+============================================================
+
+Where mathematically appropriate, analyze how residual components contribute to the correct output logits.
+
+Track contribution from:
+
+embeddings
+attention outputs
+MLP outputs
+
+toward:
+
+correct class logit
+
+and preferably:
+
+correct-vs-strongest-incorrect logit margin.
+
+Do not claim exact causality from attribution alone.
+
+Use it alongside ablation/patching.
+
+============================================================
+26. CIRCUIT SIGNATURE PER SEED
+============================================================
+
+Construct a standardized circuit signature for each seed.
+
+Include:
+
+- dominant Fourier frequencies
+- Fourier energy profile
+- important attention heads
+- important MLPs
+- layerwise representation profile
+- ablation effect vector
+- activation-patching profile where available
+
+Save:
+
+circuit_signature_seed_X.json
+
+============================================================
+27. IMPORTANT: HEAD INDEXES ARE NOT IDENTITIES
+============================================================
+
+This is critical.
+
+Do NOT compare:
+
+Seed 0 Layer 0 Head 1
+
+with:
+
+Seed 1 Layer 0 Head 1
+
+just because their indices match.
+
+Independent models can permute heads.
+
+Instead match heads based on FUNCTION.
+
+============================================================
+28. CROSS-SEED HEAD MATCHING
+============================================================
+
+Construct pairwise similarity between heads using functional signatures.
+
+Possible similarity features:
+
+- attention behavior
+- frequency alignment
+- output representation similarity
+- ablation profile
+- logit contribution profile
+
+Construct a cost/similarity matrix.
+
+Use an assignment method such as:
+
+Hungarian algorithm
+
+to find the best functional correspondence between heads across seeds.
+
+scipy.optimize.linear_sum_assignment is acceptable.
+
+Save:
+
+head_matching_seed_A_seed_B.csv
+
+============================================================
+29. MATCH QUALITY
+============================================================
+
+For every matched head pair report similarity.
+
+Do not force the conclusion that heads correspond.
+
+Some seeds may contain:
+
+- one-to-one matches
+- weak matches
+- split functionality
+- merged functionality
+- unmatched heads
+
+Preserve these possibilities.
+
+============================================================
+30. CIRCUIT-LEVEL SIMILARITY
+============================================================
+
+Create multiple independent notions of circuit similarity.
+
+A. Fourier similarity
+
+B. Representational similarity
+
+C. Causal component similarity
+
+D. Functional head-match similarity
+
+E. MLP importance similarity
+
+Do NOT immediately collapse these into one arbitrary score.
+
+Report each separately first.
+
+============================================================
+31. OPTIONAL COMPOSITE SCORE
+============================================================
+
+Only after inspecting individual metrics, optionally define an exploratory:
+
+Mechanistic Convergence Score
+
+based on normalized components such as:
+
+Fourier profile similarity
+CKA similarity
+matched-head functional similarity
+causal importance similarity
+
+If implemented:
+
+- clearly label it exploratory
+- document the formula
+- show sensitivity to weighting
+- do not make it the primary result
+
+============================================================
+32. BEHAVIORAL VS MECHANISTIC SIMILARITY
+============================================================
+
+Create a comparison table:
+
+Seed Pair
+Behavioral Similarity
+Fourier Similarity
+CKA
+Head Functional Similarity
+Ablation Similarity
+
+The important possibility is:
+
+Behaviorally Similar
+BUT
+Mechanistically Different
+
+or:
+
+Behaviorally Similar
+AND
+Mechanistically Similar
+
+============================================================
+33. TRAINING-STAGE CIRCUIT DYNAMICS
+============================================================
+
+Repeat selected analyses at:
+
+initial
+memorization
+grokking
+final
+
+Do not necessarily run every expensive intervention at every checkpoint.
+
+At minimum track:
+
+Fourier profiles
+representation similarity
+selected head signatures
+selected causal effects
+
+This lets us ask:
+
+Does mechanistic convergence happen:
+
+before grokking?
+during grokking?
+after grokking?
+
+============================================================
+34. IMPORTANT CONTROL: UNTRAINED MODELS
+============================================================
+
+Use initial checkpoints as controls.
+
+If two trained models show high Fourier similarity, compare that against similarity between random initializations.
+
+This helps determine whether observed similarity is learned rather than simply induced by architecture.
+
+============================================================
+35. IMPORTANT CONTROL: PERMUTATION / ROTATION
+============================================================
+
+Because hidden representations have symmetry, test whether similarity conclusions are robust to:
+
+- neuron permutations
+- orthogonal transformations where appropriate
+
+This is one reason CKA/subspace metrics should be preferred over naive neuron-wise comparison.
+
+============================================================
+36. IMPORTANT CONTROL: RANDOM ABLATION
+============================================================
+
+Compare identified important components against randomly selected components.
+
+Example:
+
+Top causal head ablation effect
+
+versus
+
+distribution of random head ablation effects.
+
+This provides a basic causal-control baseline.
+
+============================================================
+37. ROBUSTNESS ACROSS EXAMPLES
+============================================================
+
+Do not calculate causal effects using only a handful of modular arithmetic examples.
+
+Evaluate across the complete test set when computationally feasible.
+
+At minimum use a large deterministic subset.
+
+Report:
+
+mean effect
+standard deviation
+median effect
+
+and possibly quantiles.
+
+============================================================
+38. RESULTS TABLES
+============================================================
+
+Generate machine-readable CSV files for:
+
+seed_frequency_summary.csv
+
+fourier_similarity.csv
+
+cka_similarity.csv
+
+head_ablation.csv
+
+mlp_ablation.csv
+
+head_signatures.csv
+
+head_matching.csv
+
+circuit_similarity.csv
+
+checkpoint_dynamics.csv
+
+============================================================
+39. CORE FIGURES
+============================================================
+
+Automatically generate publication-quality figures.
+
+Use matplotlib.
+
+Do not use seaborn.
+
+Do not manually specify colors.
+
+CORE FIGURE 1
+
+Fourier power spectra across seeds
+
+File:
+
+fourier_spectra_across_seeds.png
+
+CORE FIGURE 2
+
+Seed × frequency heatmap
+
+File:
+
+seed_frequency_heatmap.png
+
+CORE FIGURE 3
+
+Fourier emergence across:
+
+initial
+memorization
+grokking
+final
+
+File:
+
+fourier_training_dynamics.png
+
+CORE FIGURE 4
+
+Pairwise Fourier similarity matrix
+
+File:
+
+fourier_similarity_heatmap.png
+
+CORE FIGURE 5
+
+Pairwise representation CKA
+
+File:
+
+cka_similarity_heatmap.png
+
+CORE FIGURE 6
+
+Attention-head causal importance
+
+File:
+
+head_ablation_heatmap.png
+
+CORE FIGURE 7
+
+Cross-seed functional head matching
+
+File:
+
+head_matching.png
+
+CORE FIGURE 8
+
+Mechanistic comparison across seed pairs
+
+File:
+
+behavior_vs_mechanism.png
+
+============================================================
+40. ADDITIONAL FIGURE — CIRCUIT MAP
+============================================================
+
+Create a simple circuit diagram from discovered components.
+
+It should show something conceptually like:
+
+INPUT NUMBERS
+      |
+      v
+EMBEDDING
+      |
+      | Fourier representation
+      v
+ATTENTION HEAD(S)
+      |
+      v
+RESIDUAL STREAM
+      |
+      v
+MLP
+      |
+      v
+OUTPUT / UNEMBEDDING
+      |
+      v
+(a+b) mod p
+
+Do not hard-code the interpretation.
+
+Generate the diagram based on actual discovered components.
+
+If evidence is insufficient, label components descriptively rather than claiming a specific algorithm.
+
+============================================================
+41. ANALYSIS COMMANDS
+============================================================
+
+Support modular commands.
+
+For example:
+
+python main.py \
+    --config configs/phase3.yaml \
+    --analysis fourier
+
+python main.py \
+    --config configs/phase3.yaml \
+    --analysis activations
+
+python main.py \
+    --config configs/phase3.yaml \
+    --analysis ablation
+
+python main.py \
+    --config configs/phase3.yaml \
+    --analysis cross-seed
+
+And:
+
+python main.py \
+    --config configs/phase3.yaml \
+    --analysis all
+
+Also support:
+
+--seed 0
+
+and optionally:
+
+--checkpoint final
+
+so analyses can be debugged cheaply.
+
+============================================================
+42. CONFIGURATION
+============================================================
+
+Create:
+
+configs/phase3.yaml
+
+Example:
+
+experiment:
+    name: grokking_mechanistic_analysis
+
+data:
+    prime: 113
+    operation: addition
+    data_seed: 42
+
+analysis:
+
+    seeds:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+
+    checkpoints:
+        - initial
+        - memorization
+        - grokking
+        - final
+
+fourier:
+
+    top_k:
+        - 3
+        - 5
+        - 10
+
+    normalize_energy: true
+
+representation:
+
+    method: linear_cka
+
+ablation:
+
+    attention_heads: true
+    mlps: true
+
+    metrics:
+        - accuracy
+        - loss
+        - correct_logit
+        - logit_margin
+
+activation_patching:
+
+    enabled: true
+
+    max_examples: configurable
+
+cache:
+
+    enabled: true
+
+============================================================
+43. M1 MACBOOK CONSTRAINTS
+============================================================
+
+Everything must run on:
+
+Apple M1 MacBook Air.
+
+Use:
+
+MPS when appropriate
+CPU otherwise
+
+No CUDA.
+
+Avoid:
+
+- loading all 10 models simultaneously
+- storing every activation simultaneously
+- huge pairwise tensors
+- unnecessary model copies
+
+Process models sequentially.
+
+For example:
+
+load seed 0
+analyze
+save results
+release model
+
+load seed 1
+analyze
+save results
+release model
+
+etc.
+
+For cross-seed comparisons, compare saved compact representations/statistics rather than keeping every model loaded.
+
+============================================================
+44. CACHE DESIGN
+============================================================
+
+Phase 3 can become expensive because activations may be repeatedly computed.
+
+Implement safe caching.
+
+Cache only what is useful.
+
+Include metadata with cached arrays:
+
+seed
+checkpoint
+dataset hash
+model configuration
+analysis version
+
+Do not reuse a cache if metadata does not match.
+
+============================================================
+45. SCIENTIFIC CAUTION
+============================================================
+
+DO NOT fabricate mechanistic interpretations.
+
+Examples:
+
+If a head attends strongly to operand A:
+
+do NOT automatically call it:
+
+"operand extraction head."
+
+Instead say:
+
+"Head L0H2 shows increased attention to the first operand."
+
+Only assign stronger functional descriptions when supported by causal evidence.
+
+Similarly:
+
+High Fourier power
+
+does NOT automatically prove that the model implements the exact theoretical Fourier algorithm.
+
+Use multiple forms of evidence.
+
+============================================================
+46. NEGATIVE RESULTS
+============================================================
+
+Preserve negative findings.
+
+Possible results include:
+
+- seeds use different frequencies
+- representations differ strongly
+- heads do not match cleanly
+- causal importance is distributed
+- no simple small circuit exists
+- Fourier structure emerges differently across seeds
+
+These are valid research outcomes.
+
+Do not force convergence.
+
+============================================================
+47. MAIN SCIENTIFIC TEST
+============================================================
+
+Ultimately classify observed evidence into descriptive categories such as:
+
+CASE A
+
+Same behavior
++
+similar Fourier representation
++
+similar causal components
+
+Evidence for strong mechanistic convergence.
+
+CASE B
+
+Same behavior
++
+similar Fourier representation
++
+different component organization
+
+Evidence for algorithm-level convergence but circuit-level diversity.
+
+CASE C
+
+Same behavior
++
+different Fourier representation
++
+different causal organization
+
+Evidence for mechanistic diversity.
+
+Do NOT decide these categories in advance.
+
+Let experimental results determine which description is supported.
+
+============================================================
+48. IMPORTANT VALIDATION
+============================================================
+
+Before analyzing all seeds:
+
+Run Phase 3 on:
+
+seed 0
+seed 1
+
+only.
+
+Verify:
+
+- checkpoints load correctly
+- Fourier basis is correct
+- activations are extracted correctly
+- Fourier spectra are sensible
+- CKA works
+- head ablation works
+- MLP ablation works
+- outputs are saved
+- no Phase-2 files are overwritten
+
+Only then provide the command for full analysis.
+
+============================================================
+49. TESTS
+============================================================
+
+Add tests for:
+
+Fourier basis orthogonality
+Fourier projection dimensions
+activation hook dimensions
+CKA symmetry
+CKA self-similarity
+head ablation isolation
+checkpoint loading
+dataset consistency
+
+For CKA verify approximately:
+
+CKA(X,X) ≈ 1
+
+and:
+
+CKA(X,Y) = CKA(Y,X)
+
+within numerical tolerance.
+
+============================================================
+50. README
+============================================================
+
+Update README with a Phase-3 section.
+
+Explain:
+
+Fourier analysis
+Fourier subspaces
+representation similarity
+CKA
+attention-head analysis
+causal ablation
+activation patching
+cross-seed head matching
+mechanistic convergence
+
+Clearly distinguish:
+
+correlation
+
+from
+
+causal evidence.
+
+============================================================
+51. FINAL PHASE-3 PIPELINE
+============================================================
+
+                  PHASE 2
+                     |
+              TRAINED SEEDS
+                     |
+        +------------+------------+
+        |            |            |
+      Seed 0       Seed 1       Seed N
+        |            |            |
+        v            v            v
+   Checkpoints   Checkpoints   Checkpoints
+        |            |            |
+        +------------+------------+
+                     |
+                     v
+              FOURIER ANALYSIS
+                     |
+        +------------+------------+
+        |                         |
+ Frequency Selection      Fourier Dynamics
+        |                         |
+        +------------+------------+
+                     |
+                     v
+          REPRESENTATION ANALYSIS
+                     |
+                    CKA
+                     |
+                     v
+             CIRCUIT DISCOVERY
+                     |
+        +------------+------------+
+        |            |            |
+     Attention      MLPs       Residual
+       Heads                     Stream
+        |            |            |
+        +------------+------------+
+                     |
+              Causal Ablation
+                     |
+             Activation Patching
+                     |
+                     v
+           CROSS-SEED ALIGNMENT
+                     |
+        +------------+-------------+
+        |            |             |
+     Fourier       CKA        Functional
+     Similarity                Head Matching
+        |            |             |
+        +------------+-------------+
+                     |
+                     v
+          MECHANISTIC CONVERGENCE
+                     |
+             MAIN PAPER RESULT
+
+============================================================
+52. AFTER IMPLEMENTATION
+============================================================
+
+After implementing Phase 3:
+
+1. Inspect all code.
+2. Run unit tests.
+3. Run a two-seed smoke analysis.
+4. Fix errors.
+5. Do NOT automatically run the expensive full analysis.
+
+Report:
+
+- files created
+- files modified
+- tests passed/failed
+- checkpoint validation
+- Fourier-basis validation
+- activation extraction validation
+- CKA validation
+- ablation validation
+- approximate runtime for one seed
+- disk usage estimate
+- exact command for the full Phase-3 experiment
+
+Do not claim any scientific result until the real analysis has been run.
+
+Implement Phase 3 now.

@@ -1,0 +1,75 @@
+{
+  "experiment_name": "laptop_pilot_modular_addition_p11",
+  "created_at_utc": "2026-10-02T20:35:26.836249+00:00",
+  "experiment_config_hash": "1f3c6ea76028cc2bb254f0cb84b96f0d0e4f8013ddd92bd6b3cd17c63b30798a",
+  "environment": {
+    "python": "3.10.9 (v3.10.9:1dd9be6584, Dec  6 2022, 14:37:36) [Clang 13.0.0 (clang-1300.0.29.30)]",
+    "torch": "2.11.0",
+    "numpy": "1.26.4",
+    "platform": "macOS-13.3-arm64-arm-64bit",
+    "git_commit": null,
+    "device": "cpu"
+  },
+  "device": "cpu",
+  "data_seed": 42,
+  "model_seeds": [
+    0,
+    1,
+    2
+  ],
+  "dataset_split_hash": "fac9aa2a3cbb68a521bec8beb9af91c95f9a64a47318a59c4bfa847ed002856e",
+  "train_split_hash": "44fcddf754a1b1a25c74b7da9a30ce2db7b1c50f229741efd8c65c81c3c2b878",
+  "test_split_hash": "64aa18cc45ab6c7f85a2902b41250e0b904e18feb783b42ee35bd1683e688a30",
+  "prime": 11,
+  "operation": "addition",
+  "train_fraction": 0.3,
+  "model_configuration": {
+    "d_model": 16,
+    "n_heads": 2,
+    "n_layers": 1,
+    "d_mlp": 32,
+    "dropout": 0.0
+  },
+  "optimizer_configuration": {
+    "learning_rate": 0.001,
+    "weight_decay": 1.0,
+    "beta1": 0.9,
+    "beta2": 0.98
+  },
+  "training_configuration": {
+    "max_steps": 3000,
+    "batch_size": "full",
+    "microbatch_size": 256,
+    "eval_batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 1.0,
+    "beta1": 0.9,
+    "beta2": 0.98,
+    "log_every": 100,
+    "eval_every": 10,
+    "checkpoint_every": 250,
+    "milestones": [
+      100,
+      250,
+      500,
+      1000,
+      2000
+    ],
+    "cpu_threads": 2
+  },
+  "memorization_criteria": {
+    "train_accuracy_threshold": 0.99
+  },
+  "grokking_criteria": {
+    "train_accuracy_threshold": 0.99,
+    "test_accuracy_threshold": 0.95,
+    "required_consecutive_evals": 3,
+    "post_grok_steps": 500
+  },
+  "initial_model_hashes": {
+    "0": "cfb4d6ec044ed6452df32761d040a38e84daf81197fe151078a109ce78687c28",
+    "1": "e96532b8415d2450a03f49a5f2da884878242a73967dece387131fe9d9a38aca",
+    "2": "72248f6004752f55934f19cd6144dac58d46980c9b73b5019b39d3c983b25d44"
+  },
+  "initialization_hashes_unique": true
+}
